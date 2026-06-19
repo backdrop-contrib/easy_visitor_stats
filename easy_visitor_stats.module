@@ -1,0 +1,173 @@
+<?php
+/**
+ * @file
+ * Another crazy idea.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function easy_visitor_stats_menu() {
+  $items['easy-visitor-stats'] = array(
+    'title' => 'Stats get',
+    'page callback' => '_easy_visitor_stats_ajax_endpoint',
+    'delivery callback' => '_easy_visitor_stats_no_content',
+    'access callback' => TRUE,
+  );
+
+  // also need admin pages and perms (view, configure), possibly a block... something to attach to nodes?
+  return $items;
+}
+
+/**
+ * Page callback
+ */
+function _easy_visitor_stats_ajax_endpoint() {
+  if (state_get('maintenance_mode', FALSE) || empty($_POST)) {
+    return;
+  }
+  if (empty($_POST['href'])) {
+    return;
+  }
+  $href_host = parse_url($_POST['href'], PHP_URL_HOST);
+  // Filter out garbage data.
+  if (empty($href_host) || !backdrop_check_trusted_hosts($href_host)) {
+    return;
+  }
+  if (!empty($_POST['ua']) && _easy_visitor_stats_detect_bot($_POST['ua'])) {
+    return;
+  }
+  // hmmmm some sort of token (get before post) might be too tricky
+  $collection = array(
+    'href' => '',// @todo strip off base_url if fits?
+    'duration' => 0,
+    'timezone' => '',
+    'referrer' => '',
+  );
+  // Fun fact, if both, href and referrer are huge (as the standard allows, sendBeacon wouldn't send them.
+  // Unclear, how large the db field needs to be.
+  foreach ($collection as $key => $value) {
+    if (isset($_POST[$key])) {
+      if ($key == 'duration') {
+        $collection[$key] = (int) $_POST[$key];
+      }
+      else {
+        $collection[$key] = filter_xss($_POST[$key]);// or trim? is that already sanitized? @todo maxlength like db?
+      }
+    }
+  }
+  // guess os and browser...
+  $os_browser = _easy_visitor_stats_guess_os_browser($_POST);
+  $collection['os'] = $os_browser['os'];
+  $collection['browser'] = $os_browser['browser'];
+
+  // Server side info.
+  $collection['timestamp'] = REQUEST_TIME;
+  $collection['ip'] = _easy_visitor_stats_ip_address();
+  debug($collection);
+  //validate data and write into db.
+}
+
+/**
+ * Custom delivery callback for AJAX endpoint.
+ */
+function _easy_visitor_stats_no_content() {
+  // @todo header noarchive, nobla...
+
+  // According to w3.org:
+  // "The server is encouraged to omit returning a response body for such
+  // requests (sendBeacon)."
+  backdrop_add_http_header('Status', '204 No Content');// seems to return 200 though...
+}
+
+/**
+ * Guess if this is a bot by patterns.
+ *
+ * It's unclear, how many of those bots actually execute JavaScript.
+ */
+function _easy_visitor_stats_detect_bot($ua_string) {
+  $pattern1 = '#Mozilla/\d\.0 \(compatible; ?[A-Za-z0-9]+(b|B)ot[;/]#';
+  if (preg_match($pattern1, $ua_string) === 1) {
+    return TRUE;
+  }
+  $pattern_2 = '/(SearchBot|ClaudeBot|Bytespider|facebookexternalhit|Exabot|WebIndex|Applebot|SleepBot|bingbot|Go-http-client|DuckAssistBot|Barkrowler|Sogou|Baiduspider|Googlebot)/';
+  if (preg_match($pattern_2, $ua_string) === 1) {
+    return TRUE;
+  }
+  // It may still be a bot, but in disguise.
+  return FALSE;
+}
+
+/**
+ * Guess OS and browser.
+ */
+function _easy_visitor_stats_guess_os_browser($post) {
+  $info = array(
+    'os' => '',
+    'browser' => '',
+  );
+  if (empty($post['platform']) && empty($post['ua'])) {
+    return $info;
+  }
+
+  if (!empty($post['ua'])) {
+    $ua = filter_xss($post['ua']);
+    $platform = !empty($post['platform']) ? filter_xss($post['platform']) : '';
+    if (strpos($platform, 'Win') === 0) {
+      $info['os'] = 'Windows';
+    }
+    elseif (strpos($platform, 'Linux') === 0) {
+      if (strpos($ua, 'Android') > 0) {
+        $info['os'] = 'Android';
+      }
+      else {
+        $info['os'] = 'Linux';
+      }
+    }
+    else {
+      $info['os'] = $platform;
+    }
+
+    // Order matters!
+    if (preg_match('/Mozilla.+Chrome.+Safari/', $ua) == 1) {
+      $info['browser'] = 'Chrome';
+    }
+    elseif (preg_match('/Mozilla.+AppleWebKit.+Safari/', $ua) == 1) {
+      $info['browser'] = 'Safari';
+    }
+    elseif (preg_match('/Mozilla.+Gecko.+Firefox/', $ua) == 1) {
+      $info['browser'] = 'Firefox';
+    }
+    else {
+      // Too many different to bother.
+      $info['browser'] = 'other';
+    }
+  }
+  return $info;
+}
+
+/**
+ * Strip off the last octet to comply with privacy requirements.
+ */
+function _easy_visitor_stats_ip_address() {
+  $ip = ip_address();
+  $ipv4_netmask = '255.255.255.0';
+  $ipv6_netmask = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000';
+  if (strpos($ip, ':') === FALSE) {
+    return inet_ntop(inet_pton($ip) & inet_pton($ipv4_netmask));
+  }
+  else {
+    return inet_ntop(inet_pton($ip) & inet_pton($ipv6_netmask));
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function easy_visitor_stats_preprocess_page($variables) {
+  global $user;
+  if (!$user->uid) {// only anonymous? the module name is "... visitor ... " ;-) or by role and configurable?
+    // Aggregation does not seem to matter.
+    backdrop_add_js(backdrop_get_path('module', 'easy_visitor_stats') . '/js/easy-visitor-stats.js');
+  }
+}
