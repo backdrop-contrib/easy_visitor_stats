@@ -29,6 +29,7 @@ function _easy_visitor_stats_ajax_endpoint() {
   if (empty($_POST['href'])) {
     return;
   }
+  // @todo some sort of token (get before post) might be tricky
   $href_host = parse_url($_POST['href'], PHP_URL_HOST);
   // Filter out garbage data.
   if (empty($href_host) || !backdrop_check_trusted_hosts($href_host)) {
@@ -37,26 +38,39 @@ function _easy_visitor_stats_ajax_endpoint() {
   if (!empty($_POST['ua']) && _easy_visitor_stats_detect_bot($_POST['ua'])) {
     return;
   }
-  // hmmmm some sort of token (get before post) might be too tricky
   $collection = array(
-    'href' => '',// @todo strip off base_url if fits?
+    'href' => '',
     'duration' => 0,
     'timezone' => '',
     'referrer' => '',
   );
-  // Fun fact, if both, href and referrer are huge (as the standard allows, sendBeacon wouldn't send them.
-  // Unclear, how large the db field needs to be.
+  // @todo db field for href and referrer: 'length' => 2048,
   foreach ($collection as $key => $value) {
     if (isset($_POST[$key])) {
-      if ($key == 'duration') {
-        $collection[$key] = (int) $_POST[$key];
-      }
-      else {
-        $collection[$key] = filter_xss($_POST[$key]);// or trim? is that already sanitized? @todo maxlength like db?
+      switch ($key) {
+        case 'duration':
+          $collection[$key] = (int) $_POST[$key];
+          break;
+
+        case 'href':
+          global $base_url;
+          $href = filter_xss($_POST[$key]);
+          if (strpos($href, $base_url) === 0) {
+            $local_url = substr($href, strlen($base_url));
+            $collection[$key] = substr($local_url, 0, 2048);
+          }
+          break;
+
+        case 'referrer':
+          $collection[$key] = substr(filter_xss($_POST[$key]), 0, 2048);
+          break;
+
+        default:
+          $collection[$key] = filter_xss($_POST[$key]);
       }
     }
   }
-  // guess os and browser...
+
   $os_browser = _easy_visitor_stats_guess_os_browser($_POST);
   $collection['os'] = $os_browser['os'];
   $collection['browser'] = $os_browser['browser'];
@@ -65,7 +79,7 @@ function _easy_visitor_stats_ajax_endpoint() {
   $collection['timestamp'] = REQUEST_TIME;
   $collection['ip'] = _easy_visitor_stats_ip_address();
   debug($collection);
-  //validate data and write into db.
+  // @todo write to db.
 }
 
 /**
@@ -140,7 +154,7 @@ function _easy_visitor_stats_guess_os_browser($post) {
     }
     else {
       // Too many different to bother.
-      $info['browser'] = 'other';
+      $info['browser'] = t('other');
     }
   }
   return $info;
