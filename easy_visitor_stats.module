@@ -14,6 +14,25 @@ function easy_visitor_stats_menu() {
     'delivery callback' => '_easy_visitor_stats_no_content',
     'access callback' => TRUE,
   );
+  $items['admin/reports/easy-visitor-stats'] = array(
+    'title' => 'Easy Visitor Statistics',
+    'page callback' => '_easy_visitor_stats_dashboard',
+    'access arguments' => array('administer site configuration'),// @todo custom perm
+    'file' => 'easy_visitor_stats.pages.inc',
+  );
+  $items['admin/reports/easy-visitor-stats/dashboard'] = array(
+    'title' => 'Dashboard',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  // @todo hook_config_info, permission...
+  $items['admin/reports/easy-visitor-stats/settings'] = array(
+    'title' => 'Settings',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'backdrop_get_form',
+    'page arguments' => array('_easy_visitor_stats_settings_form'),
+    'access arguments' => array('administer site configuration'),// @todo custom perm
+    'file' => 'easy_visitor_stats.pages.inc',
+  );
 
   // also need admin pages and perms (view, configure), possibly a block... something to attach to nodes?
   return $items;
