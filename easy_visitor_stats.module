@@ -78,8 +78,17 @@ function _easy_visitor_stats_ajax_endpoint() {
   // Server side info.
   $collection['timestamp'] = REQUEST_TIME;
   $collection['ip'] = _easy_visitor_stats_ip_address();
-  debug($collection);
-  // @todo write to db.
+
+  $query = db_insert('easy_visitor_details')->fields(array(
+    'href', 'duration', 'timezone', 'referrer',
+    'os', 'browser', 'timestamp', 'ip',
+  ));
+  $query->values($collection);
+  $query->execute();
+
+  // Increment page hits, create value if necessary.
+  $date_today = format_date(REQUEST_TIME, 'custom', 'Y-m-d');
+  db_query('INSERT INTO {easy_visitor_history} VALUES(' . "'" . $date_today . "',1" . ') ON DUPLICATE KEY UPDATE hits=hits+1;');
 }
 
 /**
@@ -154,7 +163,7 @@ function _easy_visitor_stats_guess_os_browser($post) {
     }
     else {
       // Too many different to bother.
-      $info['browser'] = t('other');
+      $info['browser'] = 'other';
     }
   }
   return $info;

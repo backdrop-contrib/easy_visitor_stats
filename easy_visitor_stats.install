@@ -1,0 +1,98 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function  easy_visitor_stats_schema() {
+  $schema['easy_visitor_details'] = array(
+    'fields' => array(
+      'did' => array(
+        'description' => 'The primary identifier for a stats record.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'href' => array(
+        'description' => 'The URL that has been called, reported by browser.',
+        'type' => 'varchar',
+        'length' => 2048,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'duration' => array(
+        'description' => 'Time in milliseconds spent on page, calculated client-side.',
+        'type' => 'int',
+        'not null' => FALSE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'timezone' => array(
+        'description' => 'Timezone string reported by browser.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'referrer' => array(
+        'description' => 'Previous URL that has been called, reported by browser.',
+        'type' => 'varchar',
+        'length' => 2048,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'os' => array(
+        'description' => 'Operating system guessed from browser data.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'browser' => array(
+        'description' => 'Browser name determined from browser data.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'timestamp' => array(
+        'description' => 'Unix timestamp the data have been sent to the server.',
+        'type' => 'int',
+        'size' => 'big',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'ip' => array(
+        'description' => 'Anonymized IP address of visitor.',
+        'type' => 'varchar',
+        'length' => 48,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'indexes' => array(
+      'timestamp' => array('timestamp'),
+    ),
+    'primary key' => array('did'),
+  );
+  $schema['easy_visitor_history'] = array(
+    'fields' => array(
+      'date' => array(
+        'description' => 'Date of aggregated page hits.',
+        'type' => 'date',
+        'not null' => TRUE,
+      ),
+      'hits' => array(
+        'description' => 'Page hit count.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('date'),
+  );
+  return $schema;
+}
