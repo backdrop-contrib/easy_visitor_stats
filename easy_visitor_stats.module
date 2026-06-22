@@ -24,6 +24,13 @@ function easy_visitor_stats_menu() {
     'title' => 'Dashboard',
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
+  $items['admin/reports/easy-visitor-stats/raw-data'] = array(
+    'title' => 'Raw data',
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => '_easy_visitor_stats_raw',
+    'access arguments' => array('administer site configuration'),// @todo custom perm
+    'file' => 'easy_visitor_stats.pages.inc',
+  );
   // @todo hook_config_info, permission...
   $items['admin/reports/easy-visitor-stats/settings'] = array(
     'title' => 'Settings',

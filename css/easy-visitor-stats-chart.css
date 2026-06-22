@@ -1,0 +1,15 @@
+canvas.easy-visitor-stats-chart {
+}
+.easy-visitor-pie-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2em;
+  justify-content: space-around;
+  margin: 2em 0;
+}
+.easy-visitor-top-ten {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em 3em;
+  justify-content: space-between;
+}
