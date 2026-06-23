@@ -11,5 +11,18 @@ canvas.easy-visitor-stats-chart {
   display: flex;
   flex-wrap: wrap;
   gap: 1em 3em;
-  justify-content: space-between;
+  justify-content: space-around;
+}
+.easy-visitor-boxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em 3em;
+  justify-content: space-around;
+  margin: 2em 0;
+}
+.easy-visitor-boxes .box {
+  text-align: center;
+}
+.easy-visitor-boxes .box div {
+  font-size: 2rem;
 }

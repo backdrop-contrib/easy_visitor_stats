@@ -19,10 +19,53 @@ function _easy_visitor_stats_dashboard() {
     $rows[] = $values;
   }
 
-  // Simple line chart:
-  // @todo WHERE in query... limit to date range? Where to display the full history?
-  $history_data = db_query("SELECT * FROM {easy_visitor_history} ORDER BY date ASC")->fetchAllAssoc('date');;
-  $line_chart_data = array(
+  // Some explanations re time span.
+  $content['intro'] = array(
+    '#markup' => 'Detailed data are available from @start_date until now. Detailed data include URL, referrer, duration, browser, OS and timezone info. These detailed data get dropped after 7 days.',
+  );
+  // Topmost boxes with some numbers.
+  $content['boxes'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array('easy-visitor-boxes'),
+    ),
+  );
+  $content['boxes']['total_hits'] = array(
+    '#markup' => '<div class="box"><strong>' . t('Total page hits') . '</strong><div>' . count($rows) . '</div></div>',
+  );
+  $durations = array_column($rows, 'duration');
+  $average = array_sum($durations) / count($durations) / 1000;
+  $content['boxes']['average_duration'] = array(
+    '#markup' => '<div class="box"><strong>' . t('Average time spent on page') . '</strong><div>' . number_format($average, 2) . 's</div></div>',
+  );
+
+
+  // Another line chart - hits based on hourly data.
+  // @todo both line charts might better get data via AJAX.
+  $timestamps = array_column($rows, 'timestamp');
+  // Couldn't get Luxon working, so...
+  //$begin = new DateTime('@' . reset($timestamps));
+  $begin = new DateTime('@' . strtotime('1 week ago'));
+  //$end = new DateTime('@' . end($timestamps));
+  $end = new dateTime('@' . strtotime('now'));
+  $hour_ranges = array();
+  while($begin < $end) {
+    $begin->modify('+1 hour');
+    $key = $begin->format('Y-m-d H');
+    $hour_ranges[$key] = 0;
+  }
+  $hits = array();
+  foreach ($timestamps as $timestamp) {
+    $date = format_date($timestamp, 'custom', 'Y-m-d H');
+    if (array_key_exists($date, $hits)) {
+      $hits[$date] = $hits[$date] + 1;
+    }
+    else {
+      $hits[$date] = 1;
+    }
+  }
+  $hits_range = array_merge($hour_ranges, $hits);
+  $hits_chart_data = array(
     'labels' => array(),
     'datasets' => array(
       0 => array(
@@ -31,12 +74,10 @@ function _easy_visitor_stats_dashboard() {
       )
     ),
   );
-  foreach ($history_data as $date => $record) {
-    $line_chart_data['labels'][] = $date;
-    $line_chart_data['datasets'][0]['data'][] = $record->hits;
-  }
-  $content['history'] = array(
-    '#markup' => '<strong>' . t('Page hits per day') . ':</strong><canvas id="easy-visitor-history-chart" class="easy-visitor-stats-chart" height="200" width="600"></canvas>',
+  $hits_chart_data['labels'] = array_keys($hits_range);
+  $hits_chart_data['datasets'][0]['data'] = array_values($hits_range);
+  $content['hits'] = array(
+    '#markup' => '<strong>' . t('Page hits per hour') . ':</strong><canvas id="easy-visitor-hits-chart" class="easy-visitor-stats-chart" height="200" width="600"></canvas>',
   );
 
   $content['pie_wrapper'] = array(
@@ -45,6 +86,7 @@ function _easy_visitor_stats_dashboard() {
       'class' => array('easy-visitor-pie-wrapper'),
     ),
   );
+
   // Only most commom browsers are collected.
   $content['pie_wrapper']['browsers'] = array(
     '#markup' => '<canvas id="easy-visitor-browser-chart" class="easy-visitor-stats-chart" height="160" width="290"></canvas>',
@@ -96,6 +138,29 @@ function _easy_visitor_stats_dashboard() {
   $timezone_chart_data['labels'] = array_keys($timezone_stats);
   $timezone_chart_data['datasets'][0]['data'] = array_values($timezone_stats);
 
+  // Simple line chart:
+  // @todo WHERE in query... limit to date range? Where to display the full history?
+  $history_data = db_query("SELECT * FROM {easy_visitor_history} ORDER BY date ASC")->fetchAllAssoc('date');;
+  $content['history_info'] = array(
+    '#markup' => '<p>The page hits history is available from @start_date until now. History data get dropped after @timespan.</p>',
+  );
+  $line_chart_data = array(
+    'labels' => array(),
+    'datasets' => array(
+      0 => array(
+        'label' => 'Page hits',
+        'data' => array(),
+      )
+    ),
+  );
+  foreach ($history_data as $date => $record) {
+    $line_chart_data['labels'][] = $date;
+    $line_chart_data['datasets'][0]['data'][] = $record->hits;
+  }
+  $content['history'] = array(
+    '#markup' => '<strong>' . t('Page hits per day') . ':</strong><canvas id="easy-visitor-history-chart" class="easy-visitor-stats-chart" height="200" width="600"></canvas>',
+  );
+
   $module_path = backdrop_get_path('module', 'easy_visitor_stats');
   backdrop_add_js($module_path . '/libraries/chart.umd.min.js');
   backdrop_add_js($module_path . '/js/easy-visitor-charts.js');
@@ -104,6 +169,7 @@ function _easy_visitor_stats_dashboard() {
   // Collect all the charts data.
   backdrop_add_js(array(
     'easyVisitorStats' => array(
+      'hitsData' => $hits_chart_data,
       'historyData' => $line_chart_data,
       'browserData' => $browser_chart_data,
       'osData' => $os_chart_data,
@@ -138,15 +204,15 @@ function _easy_visitor_stats_dashboard() {
     '#title' => t('Top pages'),
   );
 
-  // Top referrers. @todo only external referrers make sense here!, custom filter callback
-  $referrers = array_filter(array_column($rows, 'referrer'));
+  // Top external referrers.
+  $referrers = _easy_visitor_stats_filter_referrers(array_column($rows, 'referrer'));
   $referrer_stats = array_count_values($referrers);
   arsort($referrer_stats);
   $top_referrer = array_slice($referrer_stats, 0, 10);
   $top_referrer_items = array();
   foreach ($top_referrer as $referrer => $count) {
-    if (strlen($referrer) > 60) {
-      $referrer_truncated = substr($referrer, 0, 59) . '…';
+    if (strlen($referrer) > 50) {
+      $referrer_truncated = substr($referrer, 0, 49) . '…';
       $top_referrer_items[] = "<a target='_blank' href='$referrer' title='$referrer'>$referrer_truncated</a> ($count)";
     }
     else {
@@ -157,10 +223,25 @@ function _easy_visitor_stats_dashboard() {
     '#theme' => 'item_list',
     '#items' => $top_referrer_items,
     '#type' => 'ol',
-    '#title' => t('Top referrers'),
+    '#title' => t('Top external referrers'),
   );
 
   return $content;
+}
+
+/**
+ * Helper function to filter out empty or referrers from this site.
+ */
+function _easy_visitor_stats_filter_referrers(array $referrer_data) {
+  global $base_url;
+  $filtered_referrers = array();
+  foreach ($referrer_data as $referrer) {
+    if (empty($referrer) || strpos($referrer, $base_url) === 0) {
+      continue;
+    }
+    $filtered_referrers[] = $referrer;
+  }
+  return $filtered_referrers;
 }
 
 /**

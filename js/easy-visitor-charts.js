@@ -7,6 +7,37 @@
       // Inherit color from parent. @todo find a better element to pick color.
       const styles = getComputedStyle(historyChartElement);
       Chart.defaults.color = styles.color;
+      Chart.defaults.scale.ticks.autoSkipPadding = 10;
+
+      const hitsChartElement = document.getElementById('easy-visitor-hits-chart');
+      const hitsChart = new Chart(hitsChartElement, {
+        type: 'line',
+        options: {
+          animation: false,
+          scales: {
+            y: {
+              min: 0,
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+          elements: {
+            line: {
+              tension : 0.3,
+              fill: 'origin',
+            },
+            point: {
+              radius: 3,
+              hitRadius: 10,
+            },
+          },
+        },
+        data: settings.easyVisitorStats.hitsData,
+      });
+
       const historyChart = new Chart(historyChartElement, {
         type: 'line',
         options: {

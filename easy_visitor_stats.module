@@ -70,7 +70,6 @@ function _easy_visitor_stats_ajax_endpoint() {
     'timezone' => '',
     'referrer' => '',
   );
-  // @todo db field for href and referrer: 'length' => 2048,
   foreach ($collection as $key => $value) {
     if (isset($_POST[$key])) {
       switch ($key) {
