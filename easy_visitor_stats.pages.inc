@@ -18,6 +18,7 @@ function _easy_visitor_stats_dashboard() {
     unset($values['did']);
     $rows[] = $values;
   }
+  // @todo clean up this messy function
 
   // Some explanations re time span.
   $content['intro'] = array(
@@ -33,7 +34,7 @@ function _easy_visitor_stats_dashboard() {
   $content['boxes']['total_hits'] = array(
     '#markup' => '<div class="box"><strong>' . t('Total page hits') . '</strong><div>' . count($rows) . '</div></div>',
   );
-  $durations = array_column($rows, 'duration');
+  $durations = array_filter(array_column($rows, 'duration'));
   $average = 0;
   if (count($durations)) {
     $average = array_sum($durations) / count($durations) / 1000;
@@ -41,7 +42,6 @@ function _easy_visitor_stats_dashboard() {
   $content['boxes']['average_duration'] = array(
     '#markup' => '<div class="box"><strong>' . t('Average time spent on page') . '</strong><div>' . number_format($average, 2) . 's</div></div>',
   );
-
 
   // Another line chart - hits based on hourly data.
   // @todo both line charts might better get data via AJAX.
@@ -92,7 +92,7 @@ function _easy_visitor_stats_dashboard() {
 
   // Only most commom browsers are collected.
   $content['pie_wrapper']['browsers'] = array(
-    '#markup' => '<canvas id="easy-visitor-browser-chart" class="easy-visitor-stats-chart" height="160" width="290"></canvas>',
+    '#markup' => '<div>' . t('Browsers') . '<canvas id="easy-visitor-browser-chart" class="easy-visitor-stats-chart" height="220" width="320"></canvas></div>',
   );
   $browser_chart_data = array(
     'labels' => array(),
@@ -109,7 +109,7 @@ function _easy_visitor_stats_dashboard() {
 
   // Operating systems.
   $content['pie_wrapper']['os'] = array(
-    '#markup' => '<canvas id="easy-visitor-os-chart" class="easy-visitor-stats-chart" height="160" width="290"></canvas>',
+    '#markup' => '<div>' . t('Operating Systems') . '<canvas id="easy-visitor-os-chart" class="easy-visitor-stats-chart" height="220" width="320"></canvas></div>',
   );
   $os_chart_data = array(
     'labels' => array(),
@@ -126,7 +126,7 @@ function _easy_visitor_stats_dashboard() {
 
   // Timezones.
   $content['pie_wrapper']['timezone'] = array(
-    '#markup' => '<canvas id="easy-visitor-timezone-chart" class="easy-visitor-stats-chart" height="160" width="290"></canvas>',
+    '#markup' => '<div>' . t('Timezones') . '<canvas id="easy-visitor-timezone-chart" class="easy-visitor-stats-chart" height="220" width="320"></canvas></div>',
   );
   $timezone_chart_data = array(
     'labels' => array(),
@@ -140,6 +140,43 @@ function _easy_visitor_stats_dashboard() {
   $timezone_stats = array_count_values(array_column($rows, 'timezone'));
   $timezone_chart_data['labels'] = array_keys($timezone_stats);
   $timezone_chart_data['datasets'][0]['data'] = array_values($timezone_stats);
+  // More detailed duration data, reuses $durations from boxes above.
+  $range_seconds = array(
+    '0s - 15s' => 0,
+    '15s - 60s' => 0,
+    '60s - 300s' => 0,
+    'longer' => 0,
+  );
+  $ranges = array();
+  if (count($durations)) {
+    foreach ($durations as $duration_ms) {
+      $duration = $duration_ms / 1000;
+      if ($duration > 300) {
+        $range_seconds['longer'] = $range_seconds['longer'] + 1;
+      }
+      elseif ($duration > 60) {
+        $range_seconds['60s - 300s'] = $range_seconds['60s - 300s'] + 1;
+      }
+      elseif ($duration > 15) {
+        $range_seconds['15s - 60s'] = $range_seconds['15s - 60s'] + 1;
+      }
+      else {
+        $range_seconds['0s - 15s'] = $range_seconds['0s - 15s'] + 1;
+      }
+    }
+  }
+  $duration_chart_data = array(
+    'labels' => array_keys($range_seconds),
+    'datasets' => array(
+      0 => array(
+        'label' => 'Time spent on page',
+        'data' => array_values($range_seconds),
+      ),
+    ),
+  );
+  $content['pie_wrapper']['time_spent'] = array(
+    '#markup' => '<div>' . t('Time spent on page') . '<canvas id="easy-visitor-duration-chart" class="easy-visitor-stats-chart" height="220" width="320"></canvas></div>',
+  );
 
   // Simple line chart:
   // @todo WHERE in query... limit to date range? Where to display the full history?
@@ -177,6 +214,7 @@ function _easy_visitor_stats_dashboard() {
       'browserData' => $browser_chart_data,
       'osData' => $os_chart_data,
       'timezoneData' => $timezone_chart_data,
+      'durationData' => $duration_chart_data,
     ),
   ), 'setting');
 

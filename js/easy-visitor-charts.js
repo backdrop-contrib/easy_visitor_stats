@@ -60,10 +60,10 @@
         animation: false,
         responsive: false,
         maintainAspectRatio: false,
-        radius: 70,
+        radius: 64,
         plugins: {
           legend: {
-            position: 'right',
+            position: 'bottom',
             onClick: function () {},
           },
         }
@@ -90,6 +90,14 @@
         type: 'doughnut',
         options: pieChartOptions,
         data: settings.easyVisitorStats.timezoneData,
+      });
+
+      // Duration chart.
+      const durationChartElement = document.getElementById('easy-visitor-duration-chart');
+      const durationChart = new Chart(durationChartElement, {
+        type: 'doughnut',
+        options: pieChartOptions,
+        data: settings.easyVisitorStats.durationData,
       });
 
     }

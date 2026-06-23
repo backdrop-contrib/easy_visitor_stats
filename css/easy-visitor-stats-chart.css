@@ -7,6 +7,12 @@ canvas.easy-visitor-stats-chart {
   justify-content: space-around;
   margin: 2em 0;
 }
+.easy-visitor-pie-wrapper > div {
+  min-width: 24em;
+}
+.easy-visitor-pie-wrapper canvas {
+  margin: 0 auto;
+}
 .easy-visitor-top-ten {
   display: flex;
   flex-wrap: wrap;
