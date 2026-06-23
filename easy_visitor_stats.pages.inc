@@ -252,9 +252,18 @@ function _easy_visitor_stats_raw() {
   // extremely crude, needs pagination, needs responsive table classes, proper header...
   $header = array('href', 'duration', 'timezone', 'referrer', 'os', 'browser', 'timestamp', 'ip');
   $data = db_query("SELECT * FROM {easy_visitor_details} ORDER BY timestamp DESC LIMIT 30")->fetchAllAssoc('did');
+
+  $page_result = array();
+  if ($data) {
+    $rows_per_page = 30;
+    $current_page = pager_default_initialize(count($data), $rows_per_page);
+    $chunks = array_chunk($data, $rows_per_page, TRUE);
+    $page_result = $chunks[$current_page];
+  }
+
   $rows = array();
   $today_midnight = strtotime('today midnight');// must use today to avoid weird DST shifts
-  foreach ($data as $values) {
+  foreach ($page_result as $values) {
     $values = (array) $values;
     unset($values['did']);
     $values['timestamp'] = format_date($values['timestamp']);
@@ -267,6 +276,12 @@ function _easy_visitor_stats_raw() {
     '#header' => $header,
     '#rows' => $rows,
     '#empty' => t('No data yet.')
+  );
+  $content['pager'] = array(
+    '#markup' => theme('pager', array(
+      'quantity' => 7,
+      count($page_result),
+    )),
   );
   return $content;
 }
