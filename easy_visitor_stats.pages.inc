@@ -34,7 +34,10 @@ function _easy_visitor_stats_dashboard() {
     '#markup' => '<div class="box"><strong>' . t('Total page hits') . '</strong><div>' . count($rows) . '</div></div>',
   );
   $durations = array_column($rows, 'duration');
-  $average = array_sum($durations) / count($durations) / 1000;
+  $average = 0;
+  if (count($durations)) {
+    $average = array_sum($durations) / count($durations) / 1000;
+  }
   $content['boxes']['average_duration'] = array(
     '#markup' => '<div class="box"><strong>' . t('Average time spent on page') . '</strong><div>' . number_format($average, 2) . 's</div></div>',
   );
