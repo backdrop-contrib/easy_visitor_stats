@@ -178,31 +178,42 @@ function _easy_visitor_stats_dashboard() {
     '#markup' => '<div>' . t('Time spent on page') . '<canvas id="easy-visitor-duration-chart" class="easy-visitor-stats-chart" height="220" width="320"></canvas></div>',
   );
 
-  // Simple line chart, granularity day.
-  // @todo this has to be ajax, with WHERE and all. Too many data points.
-  $history_data = db_query("SELECT * FROM {easy_visitor_history} ORDER BY date ASC")->fetchAllAssoc('date');;
-  $begin = new DateTime('@' . strtotime('1 month ago'));
-  $end = new dateTime('@' . strtotime('now'));// reuse from above?
-  $day_ranges = array($begin->format('Y-m-d') => 0);
-  while($begin < $end) {
-    $begin->modify('+1 day');
-    $key = $begin->format('Y-m-d');
-    $day_ranges[$key] = 0;
-  }
+  // Simple line chart, granularity day. Actual data get fetched dynamically.
   $content['history_info'] = array(
     '#markup' => '<p>The page hits history is available from @start_date until now. History data get dropped after @timespan.</p>',
   );
-  $history_hits = array();
-  foreach ($history_data as $date => $record) {
-    $history_hits[$date] = $record->hits;
-  }
-  $line_chart_data = array(
-    'labels' => array_keys($day_ranges),
+  $history_chart_data = array(
+    'labels' => array(),
     'datasets' => array(
       0 => array(
         'label' => 'Page hits',
-        'data' => array_merge($day_ranges, $history_hits),
+        'data' => array(),
       )
+    ),
+  );
+  // @todo settings for baseFetchUrl and available ranges?
+  $date = new DateTime('now');
+  $min_date_string = db_query("SELECT MIN(date) FROM {easy_visitor_history}")->fetchField();
+  $min_date = new DateTime($min_date_string);
+  //$min_date = new DateTime('1 year ago');
+  $options = array();
+  $date_format_pattern = config_get('system.date', 'formats.date_only.pattern');
+  while ($date > $min_date) {
+    $key = $date->format('Y-m-d');
+    $label = $date->format($date_format_pattern);
+    $date->modify('-1 month');
+    $key = $date->format('Y-m-d') . ',' . $key;
+    $label = $date->format($date_format_pattern) . ' - ' . $label;
+    $options[$key] = $label;
+  }
+  $content['toggle_select'] = array(
+    '#type' => 'select',
+    '#title' => t('Select range'),
+    '#title_display' => 'none',
+    '#options' => $options,
+    '#default_value' => '',
+    '#attributes' => array(
+      'id' => 'history-graph-date-toggle',
     ),
   );
   $content['history'] = array(
@@ -218,11 +229,12 @@ function _easy_visitor_stats_dashboard() {
   backdrop_add_js(array(
     'easyVisitorStats' => array(
       'hitsData' => $hits_chart_data,
-      'historyData' => $line_chart_data,
+      'historyData' => $history_chart_data,
       'browserData' => $browser_chart_data,
       'osData' => $os_chart_data,
       'timezoneData' => $timezone_chart_data,
       'durationData' => $duration_chart_data,
+      'historyDataFetchBase' => base_path() . 'easy-visitor-stats-fetch/history/',
     ),
   ), 'setting');
 

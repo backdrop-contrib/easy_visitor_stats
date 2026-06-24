@@ -32,3 +32,7 @@ canvas.easy-visitor-stats-chart {
 .easy-visitor-boxes .box div {
   font-size: 2rem;
 }
+.form-type-select {
+  float: inline-end;
+  margin: 0;
+}

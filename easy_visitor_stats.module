@@ -8,10 +8,18 @@
  * Implements hook_menu().
  */
 function easy_visitor_stats_menu() {
+  // Collect data via AJAX post:
   $items['easy-visitor-stats'] = array(
     'title' => 'Stats get',
     'page callback' => '_easy_visitor_stats_ajax_endpoint',
     'delivery callback' => '_easy_visitor_stats_no_content',
+    'access callback' => TRUE,
+  );
+  // Fetch data for report via AJAX get:
+  $items['easy-visitor-stats-fetch/history'] = array(
+    'title' => 'Stats data',
+    'page callback' => '_easy_visitor_stats_ajax_fetch',
+    'delivery callback' => 'backdrop_json_deliver',
     'access callback' => TRUE,
   );
   $items['admin/reports/easy-visitor-stats'] = array(
@@ -222,4 +230,45 @@ function easy_visitor_stats_preprocess_page($variables) {
     // Aggregation does not seem to matter.
     backdrop_add_js(backdrop_get_path('module', 'easy_visitor_stats') . '/js/easy-visitor-stats.js');
   }
+}
+
+function _easy_visitor_stats_ajax_fetch() {
+  if (!user_access('administer site configuration')) {// @todo custom perm
+    backdrop_access_denied();
+  }
+  $args = arg();
+  $date_pattern = '/^\d{4}-\d{2}-\d{2}$/';
+  if (count($args) != 4 || preg_match($date_pattern, $args[2]) != 1 || preg_match($date_pattern, $args[3]) != 1) {
+    backdrop_not_found();
+  }
+
+  $start = $args[2];
+  $end = $args[3];
+  $data = db_query("SELECT * FROM {easy_visitor_history} WHERE date > :start and date < :end", array(
+    ':start' => $start,
+    ':end' => $end,
+  ))->fetchAll();
+  $history_hits = array();
+  foreach ($data as $record) {
+    $history_hits[$record->date] = (int) $record->hits;
+  }
+
+  $range_begin = DateTime::createFromFormat('Y-m-d', $start);
+  $range_end = DateTime::createFromFormat('Y-m-d', $end);
+  if (!$range_begin || !$range_end || $range_begin > $range_end) {
+    backdrop_not_found();
+  }
+  $day_ranges = array($start => 0);
+  while($range_begin < $range_end) {
+    $range_begin->modify('+1 day');
+    $key = $range_begin->format('Y-m-d');
+    $day_ranges[$key] = 0;
+  }
+  $merged_data = array_merge($day_ranges, $history_hits);
+  $chart_data = array(
+    'labels' => array_keys($merged_data),
+    'values' => array_values($merged_data),
+  );
+
+  return $chart_data;
 }
