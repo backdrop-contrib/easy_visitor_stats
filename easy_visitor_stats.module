@@ -244,7 +244,7 @@ function _easy_visitor_stats_ajax_fetch() {
 
   $start = $args[2];
   $end = $args[3];
-  $data = db_query("SELECT * FROM {easy_visitor_history} WHERE date > :start and date < :end", array(
+  $data = db_query("SELECT * FROM {easy_visitor_history} WHERE date >= :start and date <= :end", array(
     ':start' => $start,
     ':end' => $end,
   ))->fetchAll();
