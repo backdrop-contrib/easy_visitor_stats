@@ -197,7 +197,7 @@ function _easy_visitor_stats_dashboard() {
   $min_date = new DateTime($min_date_string);
   //$min_date = new DateTime('1 year ago');
   $options = array();
-  $date_format_pattern = config_get('system.date', 'formats.date_only.pattern');
+  $date_format_pattern = config_get('system.date', 'formats.date_only.pattern');// @todo caution, does not exist in migrated sites!
   while ($date > $min_date) {
     $key = $date->format('Y-m-d');
     $label = $date->format($date_format_pattern);
