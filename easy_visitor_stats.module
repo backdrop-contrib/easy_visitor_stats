@@ -214,6 +214,10 @@ function _easy_visitor_stats_ip_address() {
  */
 function easy_visitor_stats_preprocess_page($variables) {
   global $user;
+  $status = backdrop_get_http_header('Status');
+  if ($status == '404 Not Found' || $status == '403 Forbidden') {
+    return;
+  }
   if (!$user->uid) {// only anonymous? the module name is "... visitor ... " ;-) or by role and configurable?
     // Aggregation does not seem to matter.
     backdrop_add_js(backdrop_get_path('module', 'easy_visitor_stats') . '/js/easy-visitor-stats.js');
