@@ -312,7 +312,7 @@ function _easy_visitor_stats_raw() {
   $content = array();
   // extremely crude, needs pagination, needs responsive table classes, proper header...
   $header = array('href', 'duration', 'timezone', 'referrer', 'os', 'browser', 'timestamp', 'ip');
-  $data = db_query("SELECT * FROM {easy_visitor_details} ORDER BY timestamp DESC LIMIT 30")->fetchAllAssoc('did');
+  $data = db_query("SELECT * FROM {easy_visitor_details} ORDER BY timestamp DESC")->fetchAllAssoc('did');
 
   $page_result = array();
   if ($data) {
