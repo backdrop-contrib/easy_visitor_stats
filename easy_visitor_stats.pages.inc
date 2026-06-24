@@ -178,25 +178,33 @@ function _easy_visitor_stats_dashboard() {
     '#markup' => '<div>' . t('Time spent on page') . '<canvas id="easy-visitor-duration-chart" class="easy-visitor-stats-chart" height="220" width="320"></canvas></div>',
   );
 
-  // Simple line chart:
-  // @todo WHERE in query... limit to date range? Where to display the full history?
+  // Simple line chart, granularity day.
+  // @todo this has to be ajax, with WHERE and all. Too many data points.
   $history_data = db_query("SELECT * FROM {easy_visitor_history} ORDER BY date ASC")->fetchAllAssoc('date');;
+  $begin = new DateTime('@' . strtotime('1 month ago'));
+  $end = new dateTime('@' . strtotime('now'));// reuse from above?
+  $day_ranges = array($begin->format('Y-m-d') => 0);
+  while($begin < $end) {
+    $begin->modify('+1 day');
+    $key = $begin->format('Y-m-d');
+    $day_ranges[$key] = 0;
+  }
   $content['history_info'] = array(
     '#markup' => '<p>The page hits history is available from @start_date until now. History data get dropped after @timespan.</p>',
   );
+  $history_hits = array();
+  foreach ($history_data as $date => $record) {
+    $history_hits[$date] = $record->hits;
+  }
   $line_chart_data = array(
-    'labels' => array(),
+    'labels' => array_keys($day_ranges),
     'datasets' => array(
       0 => array(
         'label' => 'Page hits',
-        'data' => array(),
+        'data' => array_merge($day_ranges, $history_hits),
       )
     ),
   );
-  foreach ($history_data as $date => $record) {
-    $line_chart_data['labels'][] = $date;
-    $line_chart_data['datasets'][0]['data'][] = $record->hits;
-  }
   $content['history'] = array(
     '#markup' => '<strong>' . t('Page hits per day') . ':</strong><canvas id="easy-visitor-history-chart" class="easy-visitor-stats-chart" height="200" width="600"></canvas>',
   );
