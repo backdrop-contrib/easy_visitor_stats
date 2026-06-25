@@ -28,8 +28,11 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
 
   // Hits based on hourly data.
   $timestamps = array_column($rows, 'timestamp');
+  $timezone = new DateTimeZone(config_get('system.date','default_timezone'));
   $begin = new DateTime('@' . strtotime('1 week ago'));
+  $begin->setTimezone($timezone);
   $end = new dateTime('@' . strtotime('now'));
+  $end->setTimezone($timezone);
   $hour_ranges = array();
   while($begin < $end) {
     $begin->modify('+1 hour');
