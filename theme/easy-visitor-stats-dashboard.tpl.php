@@ -69,7 +69,7 @@
     <canvas id="easy-visitor-history-chart" width="1156" height="400" aria-label="@todo" role="img"></canvas>
   </div>
   <h2>High score lists</h2>
-  <div class="easy-visitor-top-ten">
+  <div class="easy-visitor-top-ten-wrapper">
     <?php print $top_ten; ?>
   </div>
 </div>

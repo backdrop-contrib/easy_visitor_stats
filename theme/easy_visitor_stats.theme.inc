@@ -190,8 +190,8 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   $top_href = array_slice($href_stats, 0, 10);
   $top_href_items = array();
   foreach ($top_href as $href => $count) {
-    if (strlen($href) > 40) {
-      $href_truncated = substr($href, 0, 39) . '…';
+    if (strlen($href) > 50) {
+      $href_truncated = substr($href, 0, 50) . '…';
       $top_href_items[] = "<a href='$href' title='$href'>$href_truncated</a> ($count)";
     }
     else {
@@ -213,7 +213,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   $top_referrer_items = array();
   foreach ($top_referrer as $referrer => $count) {
     if (strlen($referrer) > 50) {
-      $referrer_truncated = substr($referrer, 0, 49) . '…';
+      $referrer_truncated = substr($referrer, 0, 50) . '…';
       $top_referrer_items[] = "<a target='_blank' href='$referrer' title='$referrer'>$referrer_truncated</a> ($count)";
     }
     else {
