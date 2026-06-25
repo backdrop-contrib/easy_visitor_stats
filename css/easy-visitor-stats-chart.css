@@ -7,11 +7,15 @@ canvas.easy-visitor-stats-chart {
   justify-content: space-around;
   margin: 2em 0;
 }
-.easy-visitor-pie-wrapper > div {
-  min-width: 24em;
+.easy-visitor-stats-dashboard h3 {
+  font-size: 1em;
 }
-.easy-visitor-pie-wrapper canvas {
-  margin: 0 auto;
+.chart-title {
+  font-weight: bold;
+  text-align: center;
+}
+.easy-visitor-history-wrapper .chart-title {
+  text-align: initial;
 }
 .easy-visitor-top-ten {
   display: flex;
@@ -35,4 +39,11 @@ canvas.easy-visitor-stats-chart {
 .form-type-select {
   float: inline-end;
   margin: 0;
+}
+.legend-color-box {
+  display: inline-block;
+  width: 20px;
+  height: 10px;
+  margin-inline-end: .5em;
+  vertical-align: middle;
 }

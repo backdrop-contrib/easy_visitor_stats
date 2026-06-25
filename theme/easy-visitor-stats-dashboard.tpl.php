@@ -26,38 +26,38 @@
   </div>
   <h2>Recent visits</h2>
   <div class="easy-visitor-hits-wrapper">
-    <div class="easy-visitor-hits-title">Page hits per hour:</div>
+    <div class="chart-title">Page hits per hour</div>
     <canvas id="easy-visitor-hits-chart" width="1156" height="400" aria-label="@todo" role="img"></canvas>
   </div>
   <!-- Begin pie charts -->
   <h2>About visitors</h2>
   <div class="easy-visitor-pie-wrapper">
     <div>
-      <h3>Browsers</h3>
+      <div class="chart-title">Browsers</div>
       <div class="pie-chart-wrapper">
         <canvas id="easy-visitor-browser-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
-        <div id="easy-visitor-browser-labels">labels</div>
+        <div id="easy-visitor-browser-legend"></div>
       </div>
     </div>
     <div>
-      <h3>Operating systems</h3>
+      <div class="chart-title">Operating systems</div>
       <div class="pie-chart-wrapper">
         <canvas id="easy-visitor-os-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
-        <div id="easy-visitor-os-labels">labels</div>
+        <div id="easy-visitor-os-legend"></div>
       </div>
     </div>
     <div>
-      <h3>Timezones</h3>
+      <div class="chart-title">Timezones</div>
       <div class="pie-chart-wrapper">
         <canvas id="easy-visitor-timezone-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
-        <div id="easy-visitor-timezone-labels">labels</div>
+        <div id="easy-visitor-timezone-legend"></div>
       </div>
     </div>
     <div>
-      <h3>Time spent on page</h3>
+      <div class="chart-title">Time spent on page</div>
       <div class="pie-chart-wrapper">
         <canvas id="easy-visitor-duration-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
-        <div id="easy-visitor-duration-labels">labels</div>
+        <div id="easy-visitor-duration-legend"></div>
       </div>
     </div>
   </div>
@@ -65,7 +65,7 @@
   <h2>Visits history</h2>
   <div class="easy-visitor-history-wrapper">
     <div class="easy-visitor-history-toggle"><?php print $history_select; ?></div>
-    <div class="easy-visitor-history-title">Page hits per day:</div>
+    <div class="chart-title">Page hits per day</div>
     <canvas id="easy-visitor-history-chart" width="1156" height="400" aria-label="@todo" role="img"></canvas>
   </div>
   <h2>High score lists</h2>

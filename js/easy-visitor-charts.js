@@ -4,6 +4,31 @@
  */
 (function ($) {
   "use strict";
+
+  /**
+   * Custom chart.js label plugin.
+   */
+  const htmlLegendPlugin = {
+    id: 'htmlLegend',
+    afterUpdate(chart, args, options) {
+      const items = chart.options.plugins.legend.labels.generateLabels(chart);
+      const legendContainer = document.getElementById(options.containerID);
+      if (!legendContainer) {
+        return;
+      }
+      for (const item of items) {
+        const div = document.createElement('div');
+        const boxSpan = document.createElement('span');
+        boxSpan.style.background = item.fillStyle;
+        boxSpan.classList.add('legend-color-box');
+        const text = document.createTextNode(item.text);
+        div.appendChild(boxSpan);
+        div.appendChild(text);
+        legendContainer.appendChild(div);
+      }
+    }
+  }
+
   Backdrop.behaviors.easyVisitorCharts = {
     /**
      * Dynamically fetch charts data.
@@ -105,44 +130,55 @@
         animation: false,
         responsive: false,
         maintainAspectRatio: false,
-        radius: 64,
+        radius: 70,
         plugins: {
           legend: {
-            position: 'bottom',
-            onClick: function () {},
+            display: false,
+            //onClick: function () {},
           },
-        }
+          htmlLegend: {
+            containerID: '',
+          },
+        },
       };
       // Browser pie chart.
       const browserChartElement = document.getElementById('easy-visitor-browser-chart');
+      pieChartOptions.plugins.htmlLegend.containerID = 'easy-visitor-browser-legend';
       const browserChart = new Chart(browserChartElement, {
         type: 'doughnut',
         options: pieChartOptions,
         data: settings.easyVisitorStats.browserData,
+        plugins: [htmlLegendPlugin],
       });
 
       // OS pie chart.
       const osChartElement = document.getElementById('easy-visitor-os-chart');
+      pieChartOptions.plugins.htmlLegend.containerID = 'easy-visitor-os-legend';
       const osChart = new Chart(osChartElement, {
         type: 'doughnut',
         options: pieChartOptions,
         data: settings.easyVisitorStats.osData,
+        plugins: [htmlLegendPlugin],
       });
 
       // Timezone chart.
       const timezoneChartElement = document.getElementById('easy-visitor-timezone-chart');
+      pieChartOptions.plugins.htmlLegend.containerID = 'easy-visitor-timezone-legend';
       const timezoneChart = new Chart(timezoneChartElement, {
         type: 'doughnut',
         options: pieChartOptions,
         data: settings.easyVisitorStats.timezoneData,
+        plugins: [htmlLegendPlugin],
       });
 
       // Duration chart.
       const durationChartElement = document.getElementById('easy-visitor-duration-chart');
+      pieChartOptions.plugins.htmlLegend.containerID = 'easy-visitor-duration-legend';
       const durationChart = new Chart(durationChartElement, {
         type: 'doughnut',
         options: pieChartOptions,
         data: settings.easyVisitorStats.durationData,
+        plugins: [htmlLegendPlugin],
       });
 
     }
