@@ -15,7 +15,7 @@ function easy_visitor_stats_menu() {
     'delivery callback' => '_easy_visitor_stats_no_content',
     'access callback' => TRUE,
   );
-  // Fetch data for report via AJAX get:
+  // Fetch data for report via AJAX post:
   $items['easy-visitor-stats-fetch/history'] = array(
     'title' => 'Stats data',
     'page callback' => '_easy_visitor_stats_ajax_fetch',
@@ -93,7 +93,6 @@ function _easy_visitor_stats_ajax_endpoint() {
   if (empty($_POST['href'])) {
     return;
   }
-  // @todo some sort of token (get before post) might be tricky
   $href_host = parse_url($_POST['href'], PHP_URL_HOST);
   // Filter out garbage data.
   if (empty($href_host) || !backdrop_check_trusted_hosts($href_host)) {
@@ -102,6 +101,12 @@ function _easy_visitor_stats_ajax_endpoint() {
   if (!empty($_POST['ua']) && _easy_visitor_stats_detect_bot($_POST['ua'])) {
     return;
   }
+  // There should have been a GET before this POST.
+  $site_key = state_get('easyVisitorStatsSiteKey');
+  if ($site_key && (empty($_POST['siteKey']) || $_POST['siteKey'] != $site_key)) {
+    return;
+  }
+
   $collection = array(
     'href' => '',
     'duration' => 0,
@@ -256,9 +261,19 @@ function easy_visitor_stats_preprocess_page($variables) {
   if ($status == '404 Not Found' || $status == '403 Forbidden') {
     return;
   }
-  if (!$user->uid) {// only anonymous? the module name is "... visitor ... " ;-) or by role and configurable?
-    // Aggregation does not seem to matter.
+  // Only anonymous.
+  if (!$user->uid) {
+    $site_key = state_get('easyVisitorStatsSiteKey', FALSE);
+    // @todo this is not the right place to create the key. install/cron to check...
+    if (!$site_key) {
+      $site_key = backdrop_random_key(16);
+      state_set('easyVisitorStatsSiteKey', $site_key);
+    }
     backdrop_add_js(backdrop_get_path('module', 'easy_visitor_stats') . '/js/easy-visitor-stats.js');
+    backdrop_add_js(array(
+      'easyVisitorStatsSiteKey' => $site_key,
+      'easyVisitorStatsBeaconUrl' => base_path() . 'easy-visitor-stats',
+    ), 'setting');
   }
 }
 

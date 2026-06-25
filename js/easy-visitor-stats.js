@@ -15,6 +15,11 @@
 
     // Move away or close tab or close browser.
     if (document.visibilityState === 'hidden') {
+      if (!Backdrop.settings.easyVisitorStatsBeaconUrl) {
+        return;
+      }
+      const fetchUrl = Backdrop.settings.easyVisitorStatsBeaconUrl;
+      const siteKey = Backdrop.settings.easyVisitorStatsSiteKey;
       const now = new Date().getTime();
       let startTime = now;
       if (Backdrop.settings.easyVisitorStart !== undefined) {
@@ -24,7 +29,7 @@
       const data = {
         href: window.location.href,
         duration: duration,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,// is this useful, anyway?
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         referrer: document.referrer,
         platform: navigator.platform,
         ua: navigator.userAgent
@@ -34,8 +39,8 @@
       for (const property in data) {
         formData.append(property, data[property]);
       }
-      // @todo url from conf! base_path! or base url and hardcode?
-      navigator.sendBeacon("/easy-visitor-stats", formData);
+      formData.append('siteKey', siteKey);
+      navigator.sendBeacon(fetchUrl, formData);
     }
   });
 })();
