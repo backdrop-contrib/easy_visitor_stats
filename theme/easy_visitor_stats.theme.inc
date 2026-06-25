@@ -58,6 +58,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   );
 
   $browser_stats = array_count_values(array_column($rows, 'browser'));
+  arsort($browser_stats);
   $browser_chart_data = array(
     'labels' => array_keys($browser_stats),
     'datasets' => array(
@@ -69,6 +70,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   );
 
   $os_stats = array_count_values(array_column($rows, 'os'));
+  arsort($os_stats);
   $os_chart_data = array(
     'labels' => array_keys($os_stats),
     'datasets' => array(
@@ -80,6 +82,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   );
 
   $timezone_stats = array_count_values(array_column($rows, 'timezone'));
+  arsort($timezone_stats);
   $timezone_chart_data = array(
     'labels' => array_keys($timezone_stats),
     'datasets' => array(
