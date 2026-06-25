@@ -176,7 +176,7 @@ function _easy_visitor_stats_detect_bot($ua_string) {
   if (preg_match($pattern1, $ua_string) === 1) {
     return TRUE;
   }
-  $pattern_2 = '/(SearchBot|ClaudeBot|Bytespider|facebookexternalhit|Exabot|WebIndex|Applebot|SleepBot|bingbot|Go-http-client|DuckAssistBot|Barkrowler|Sogou|Baiduspider|Googlebot)/';
+  $pattern_2 = '/(SearchBot|ClaudeBot|Bytespider|facebookexternalhit|Exabot|WebIndex|Applebot|SleepBot|bingbot|Go-http-client|DuckAssistBot|Barkrowler|Sogou|Baiduspider|Googlebot|HeadlessChrome)/';
   if (preg_match($pattern_2, $ua_string) === 1) {
     return TRUE;
   }
