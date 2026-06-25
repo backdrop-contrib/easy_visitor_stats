@@ -1,11 +1,15 @@
-canvas.easy-visitor-stats-chart {
+.easy-visitor-stats-dashboard canvas {
+  margin-block: 1em;
+}
+.easy-visitor-stats-dashboard .chart-legend {
+  font-size: .8em;
 }
 .easy-visitor-pie-wrapper {
   display: flex;
   flex-wrap: wrap;
   gap: 2em;
   justify-content: space-around;
-  margin: 2em 0;
+  margin: 1em 0;
 }
 .easy-visitor-stats-dashboard h3 {
   font-size: 1em;

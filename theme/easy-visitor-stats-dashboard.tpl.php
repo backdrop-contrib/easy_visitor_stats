@@ -21,7 +21,7 @@
     </div>
     <div class="box">
       <strong>Average time spent on page</strong>
-      <div><?php print $average_time_spent; ?></div>
+      <div><?php print $average_time_spent; ?>s</div>
     </div>
   </div>
   <h2>Recent visits</h2>
@@ -36,28 +36,28 @@
       <div class="chart-title">Browsers</div>
       <div class="pie-chart-wrapper">
         <canvas id="easy-visitor-browser-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
-        <div id="easy-visitor-browser-legend"></div>
+        <div id="easy-visitor-browser-legend" class="chart-legend"></div>
       </div>
     </div>
     <div>
       <div class="chart-title">Operating systems</div>
       <div class="pie-chart-wrapper">
         <canvas id="easy-visitor-os-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
-        <div id="easy-visitor-os-legend"></div>
+        <div id="easy-visitor-os-legend" class="chart-legend"></div>
       </div>
     </div>
     <div>
       <div class="chart-title">Timezones</div>
       <div class="pie-chart-wrapper">
         <canvas id="easy-visitor-timezone-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
-        <div id="easy-visitor-timezone-legend"></div>
+        <div id="easy-visitor-timezone-legend" class="chart-legend"></div>
       </div>
     </div>
     <div>
       <div class="chart-title">Time spent on page</div>
       <div class="pie-chart-wrapper">
         <canvas id="easy-visitor-duration-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
-        <div id="easy-visitor-duration-legend"></div>
+        <div id="easy-visitor-duration-legend" class="chart-legend"></div>
       </div>
     </div>
   </div>
