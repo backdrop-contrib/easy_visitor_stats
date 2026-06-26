@@ -277,6 +277,17 @@ function easy_visitor_stats_preprocess_page($variables) {
   }
 }
 
+/**
+ * Implements hook_config_info().
+ */
+function easy_visitor_stats_config_info() {
+  $prefixes['easy_visitor_stats.settings'] = array(
+    'label' => t('Easy Visitor Stats Settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
 function _easy_visitor_stats_ajax_fetch() {
   if (!user_access('administer site configuration')) {// @todo custom perm
     backdrop_access_denied();

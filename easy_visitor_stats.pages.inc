@@ -56,6 +56,33 @@ function _easy_visitor_stats_raw() {
  * Form callback for admin/reports/easy-visitor-stats/settings.
  */
 function _easy_visitor_stats_settings_form($form, $form_state) {
-  $form = array();
-  return $form;
+  $form['#config'] = 'easy_visitor_stats.settings';
+  $config = config('easy_visitor_stats.settings');
+  $form['keep_detailed_days'] = array(
+    '#type' => 'number',
+    '#title' => t('How many days to keep detailed data'),
+    '#min' => 3,
+    '#max' => 60,
+    '#field_suffix' => t('days'),
+    '#default_value' => $config->get('keep_detailed_days'),
+    '#required' => TRUE,
+    '#description' => t('Database records older than that will be cleared out from <em>easy_visitor_details</em> table on cron runs.'),
+  );
+  $form['keep_history_months'] = array(
+    '#type' => 'number',
+    '#title' => t('How many months to keep history data'),
+    '#min' => 3,
+    '#max' => 36,
+    '#field_suffix' => t('months'),
+    '#default_value' => $config->get('keep_history_months'),
+    '#required' => TRUE,
+    '#description' => t('Database records older than that will be cleared out from <em>easy_visitor_history</em> table on cron runs.'),
+  );
+  $form['show_animations'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show animated charts'),
+    '#default_value' => $config->get('show_animations'),
+    '#description' => t('Animated charts can be nice, but might also be distracting.'),
+  );
+  return system_settings_form($form);
 }

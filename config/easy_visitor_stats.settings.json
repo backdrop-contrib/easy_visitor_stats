@@ -1,0 +1,6 @@
+{
+    "_config_name": "easy_visitor_stats.settings",
+    "keep_detailed_days": "7",
+    "keep_history_months": "12",
+    "show_animations": 0
+}
