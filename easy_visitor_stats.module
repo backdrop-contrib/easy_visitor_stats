@@ -20,12 +20,12 @@ function easy_visitor_stats_menu() {
     'title' => 'Stats data',
     'page callback' => '_easy_visitor_stats_ajax_fetch',
     'delivery callback' => 'backdrop_json_deliver',
-    'access callback' => TRUE,
+    'access arguments' => array('access statistics dashboard'),
   );
   $items['admin/reports/easy-visitor-stats'] = array(
     'title' => 'Easy Visitor Statistics',
     'page callback' => '_easy_visitor_stats_dashboard',
-    'access arguments' => array('administer site configuration'),// @todo custom perm
+    'access arguments' => array('access statistics dashboard'),
     'file' => 'easy_visitor_stats.pages.inc',
   );
   $items['admin/reports/easy-visitor-stats/dashboard'] = array(
@@ -36,20 +36,18 @@ function easy_visitor_stats_menu() {
     'title' => 'Raw data',
     'type' => MENU_LOCAL_TASK,
     'page callback' => '_easy_visitor_stats_raw',
-    'access arguments' => array('administer site configuration'),// @todo custom perm
+    'access arguments' => array('access statistics raw data'),
     'file' => 'easy_visitor_stats.pages.inc',
   );
-  // @todo hook_config_info, permission...
   $items['admin/reports/easy-visitor-stats/settings'] = array(
     'title' => 'Settings',
     'type' => MENU_LOCAL_TASK,
     'page callback' => 'backdrop_get_form',
     'page arguments' => array('_easy_visitor_stats_settings_form'),
-    'access arguments' => array('administer site configuration'),// @todo custom perm
+    'access arguments' => array('administer site configuration'),
     'file' => 'easy_visitor_stats.pages.inc',
   );
 
-  // also need admin pages and perms (view, configure), possibly a block... something to attach to nodes?
   return $items;
 }
 
@@ -163,8 +161,6 @@ function _easy_visitor_stats_ajax_endpoint() {
  * Custom delivery callback for AJAX endpoint.
  */
 function _easy_visitor_stats_no_content() {
-  // @todo header noarchive, nobla...
-
   // According to w3.org:
   // "The server is encouraged to omit returning a response body for such
   // requests (sendBeacon)."
@@ -264,11 +260,6 @@ function easy_visitor_stats_preprocess_page($variables) {
   // Only anonymous.
   if (!$user->uid) {
     $site_key = state_get('easyVisitorStatsSiteKey', FALSE);
-    // @todo this is not the right place to create the key. install/cron to check...
-    if (!$site_key) {
-      $site_key = backdrop_random_key(16);
-      state_set('easyVisitorStatsSiteKey', $site_key);
-    }
     backdrop_add_js(backdrop_get_path('module', 'easy_visitor_stats') . '/js/easy-visitor-stats.js');
     backdrop_add_js(array(
       'easyVisitorStatsSiteKey' => $site_key,
@@ -293,6 +284,23 @@ function easy_visitor_stats_cron() {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function easy_visitor_stats_permission() {
+  $permissions = array(
+    'access statistics dashboard' => array(
+      'title' => t('Access dashboard'),
+      'description' => t('Access Easy Visitor Statistics dashboard.'),
+    ),
+    'access statistics raw data' => array(
+      'title' => t('Access raw data'),
+      'description' => t('Access Easy Visitor Statistics raw data table.'),
+    ),
+  );
+  return $permissions;
+}
+
+/**
  * Implements hook_config_info().
  */
 function easy_visitor_stats_config_info() {
@@ -304,9 +312,6 @@ function easy_visitor_stats_config_info() {
 }
 
 function _easy_visitor_stats_ajax_fetch() {
-  if (!user_access('administer site configuration')) {// @todo custom perm
-    backdrop_access_denied();
-  }
   $args = arg();
   $date_pattern = '/^\d{4}-\d{2}-\d{2}$/';
   if (count($args) != 4 || preg_match($date_pattern, $args[2]) != 1 || preg_match($date_pattern, $args[3]) != 1) {
