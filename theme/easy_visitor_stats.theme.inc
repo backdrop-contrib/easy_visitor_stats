@@ -28,11 +28,11 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
 
   // Hits based on hourly data.
   $timestamps = array_column($rows, 'timestamp');
-  $timezone = new DateTimeZone(config_get('system.date','default_timezone'));
+  $site_timezone = new DateTimeZone(config_get('system.date','default_timezone'));
   $begin = new DateTime('@' . strtotime('1 week ago'));
-  $begin->setTimezone($timezone);
+  $begin->setTimezone($site_timezone);
   $end = new dateTime('@' . strtotime('now'));
-  $end->setTimezone($timezone);
+  $end->setTimezone($site_timezone);
   $hour_ranges = array();
   while($begin < $end) {
     $begin->modify('+1 hour');
@@ -146,7 +146,11 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   $min_date_string = db_query("SELECT MIN(date) FROM {easy_visitor_history}")->fetchField();
   $min_date = new DateTime($min_date_string);
   $options = array();
-  $date_format_pattern = config_get('system.date', 'formats.date_only.pattern');// @todo caution, does not exist in migrated sites!
+  $date_format_pattern = config_get('system.date', 'formats.date_only.pattern');
+  // Fallback, as this format might not exist in migrated sites.
+  if (!$date_format_pattern) {
+    $date_format_pattern = 'd/m/Y';
+  }
   while ($date > $min_date) {
     $key = $date->format('Y-m-d');
     $label = $date->format($date_format_pattern);
