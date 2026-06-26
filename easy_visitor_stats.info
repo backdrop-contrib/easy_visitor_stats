@@ -1,6 +1,6 @@
 type = module
 name = Easy Visitor Statistics
-description = Simple thing... @todo
+description = Web anaytics made easy, zero setup required, ships with pretty charts.
 backdrop = 1.x
 
 configure = admin/reports/easy-visitor-stats/settings
