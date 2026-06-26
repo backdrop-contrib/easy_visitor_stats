@@ -55,6 +55,7 @@
      * {@inheritdoc}
      */
     attach: function (context, settings) {
+      const showAnimation = settings.easyVisitorStats.showAnimation;
       // Inherit color from content for better readability.
       const styles = getComputedStyle(document.querySelector('.easy-visitor-boxes'));
       Chart.defaults.color = styles.color;
@@ -64,50 +65,56 @@
 
       const hitsChartElement = document.getElementById('easy-visitor-hits-chart');
       const hitsData = settings.easyVisitorStats.hitsData;
-      const hitsChart = new Chart(hitsChartElement, {
-        type: 'line',
-        options: {
-          animation: false,
-          scales: {
-            y: {
-              min: 0,
-              suggestedMax: Math.max(...hitsData.datasets[0].data) + 1,
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-          elements: {
-            line: {
-              fill: 'origin',
-            },
+      const hitsChartOptions = {
+        scales: {
+          y: {
+            min: 0,
+            suggestedMax: Math.max(...hitsData.datasets[0].data) + 1,
           },
         },
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        elements: {
+          line: {
+            fill: 'origin',
+          },
+        },
+      };
+      if (!showAnimation) {
+        hitsChartOptions.animation = false;
+      }
+      const hitsChart = new Chart(hitsChartElement, {
+        type: 'line',
+        options: hitsChartOptions,
         data: hitsData,
       });
 
       const historyChartElement = document.getElementById('easy-visitor-history-chart');
+      const historyChartOptions = {
+        scales: {
+          y: {
+            min: 0,
+          }
+        },
+        plugins: {
+          legend: {
+            display: false,
+          },
+          title: {
+            display: true,
+            text: '',
+          }
+        },
+      };
+      if (!showAnimation) {
+        historyChartOptions.animation = false;
+      }
       const historyChart = new Chart(historyChartElement, {
         type: 'line',
-        options: {
-          animation: false,
-          scales: {
-            y: {
-              min: 0,
-            }
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-            title: {
-              display: true,
-              text: '',
-            }
-          },
-        },
+        options: historyChartOptions,
         data: settings.easyVisitorStats.historyData,
       });
 
@@ -127,20 +134,21 @@
       });
 
       const pieChartOptions = {
-        animation: false,
         responsive: false,
         maintainAspectRatio: false,
         radius: 70,
         plugins: {
           legend: {
             display: false,
-            //onClick: function () {},
           },
           htmlLegend: {
             containerID: '',
           },
         },
       };
+      if (!showAnimation) {
+        pieChartOptions.animation = false;
+      }
       // Browser pie chart.
       const browserChartElement = document.getElementById('easy-visitor-browser-chart');
       pieChartOptions.plugins.htmlLegend.containerID = 'easy-visitor-browser-legend';

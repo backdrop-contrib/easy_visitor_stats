@@ -181,6 +181,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
       'timezoneData' => $timezone_chart_data,
       'durationData' => $duration_chart_data,
       'historyDataFetchBase' => base_path() . 'easy-visitor-stats-fetch/history/',
+      'showAnimation' => (bool) config_get('easy_visitor_stats.settings', 'show_animations'),
     ),
   ), 'setting');
 
