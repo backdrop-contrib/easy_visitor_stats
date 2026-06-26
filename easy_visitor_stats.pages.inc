@@ -61,7 +61,7 @@ function _easy_visitor_stats_settings_form($form, $form_state) {
   $form['keep_detailed_days'] = array(
     '#type' => 'number',
     '#title' => t('How many days to keep detailed data'),
-    '#min' => 3,
+    '#min' => 7,
     '#max' => 60,
     '#field_suffix' => t('days'),
     '#default_value' => $config->get('keep_detailed_days'),
