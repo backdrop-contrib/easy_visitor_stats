@@ -278,6 +278,21 @@ function easy_visitor_stats_preprocess_page($variables) {
 }
 
 /**
+ * Implements hook_cron().
+ */
+function easy_visitor_stats_cron() {
+  $config = config('easy_visitor_stats.settings');
+  $details_old_date = new DateTime($config->get('keep_detailed_days') . ' days ago');
+  $history_old_date = new DateTime($config->get('keep_history_months') . ' months ago');
+  db_delete('easy_visitor_details')
+    ->condition('timestamp', $details_old_date->format('U'), '<')
+    ->execute();
+  db_delete('easy_visitor_history')
+    ->condition('date', $history_old_date->format('Y-m-d'), '<')
+    ->execute();
+}
+
+/**
  * Implements hook_config_info().
  */
 function easy_visitor_stats_config_info() {
