@@ -31,13 +31,12 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   $min_date = new DateTime('@' . $first_timestamp);
   $min_date->setTimezone($site_timezone);
   $options = array();
-  $date_format_pattern = config_get('system.date', 'formats.short.pattern');// @todo localized format ... or helper func
   while ($date > $min_date) {
     $key = $date->format('U');
-    $label = $date->format($date_format_pattern);
+    $label = format_date($date->format('U'), 'short');
     $date->modify('-1 week');
     $key = $date->format('U') . ',' . $key;
-    $label = $date->format($date_format_pattern) . ' - ' . $label;
+    $label = format_date($date->format('U'), 'short') . ' - ' . $label;
     $options[$key] = $label;
   }
   $toggle_select = array(
@@ -147,17 +146,12 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   $min_date_string = db_query("SELECT MIN(date) FROM {easy_visitor_history}")->fetchField();
   $min_date = new DateTime($min_date_string);
   $options = array();
-  $date_format_pattern = config_get('system.date', 'formats.date_only.pattern');
-  // Fallback, as this format might not exist in migrated sites.
-  if (!$date_format_pattern) {
-    $date_format_pattern = 'd/m/Y';
-  }
   while ($date > $min_date) {
     $key = $date->format('Y-m-d');
-    $label = $date->format($date_format_pattern);
+    $label = format_date($date->format('U'), 'date_only');
     $date->modify('-1 month');
     $key = $date->format('Y-m-d') . ',' . $key;
-    $label = $date->format($date_format_pattern) . ' - ' . $label;
+    $label = format_date($date->format('U'), 'date_only') . ' - ' . $label;
     $options[$key] = $label;
   }
   $toggle_select = array(
@@ -173,15 +167,14 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   $variables['history_select'] = backdrop_render($toggle_select);
 
   // Infotext for details element on top.
-  $first_row = reset($rows);
   $config = config('easy_visitor_stats.settings');
   $infotext = array();
   $infotext[] = t('Detailed data are available from @start_date until now. Detailed data include URL, referrer, duration, browser, OS and timezone info. These detailed data get dropped after @days days.', array(
-    '@start_date' => format_date($first_row['timestamp']),
+    '@start_date' => format_date($rows[0]['timestamp']),
     '@days' => $config->get('keep_detailed_days'),
   ));
   $infotext[] = t('History data are available from @start_date. History data only contain hit count per day. These data get dropped after @months months.', array(
-    '@start_date' => $min_date->format($date_format_pattern),
+    '@start_date' => format_date($min_date->format('U'), 'date_only'),
     '@months' => $config->get('keep_history_months'),
   ));
   $variables['infotext'] = implode('<br>', $infotext);
