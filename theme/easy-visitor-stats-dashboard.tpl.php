@@ -27,7 +27,7 @@
   <h2><?php print t('Recent visits'); ?></h2>
   <div class="easy-visitor-hits-wrapper">
     <div class="chart-title"><?php print t('Page hits per hour'); ?></div>
-    <canvas id="easy-visitor-hits-chart" width="1156" height="400" aria-label="@todo" role="img"></canvas>
+    <canvas id="easy-visitor-hits-chart" width="1156" height="400" aria-label="<?php print t('Line chart of hourly visits'); ?>" role="img"></canvas>
   </div>
   <!-- Begin pie charts -->
   <h2><?php print t('About visitors'); ?></h2>
@@ -35,28 +35,28 @@
     <div>
       <div class="chart-title"><?php print t('Browsers'); ?></div>
       <div class="pie-chart-wrapper">
-        <canvas id="easy-visitor-browser-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
+        <canvas id="easy-visitor-browser-chart" width="150" height="150" aria-label="<?php print t('Doughnut chart of browser names'); ?>" role="img"></canvas>
         <div id="easy-visitor-browser-legend" class="chart-legend"></div>
       </div>
     </div>
     <div>
       <div class="chart-title"><?php print t('Operating systems'); ?></div>
       <div class="pie-chart-wrapper">
-        <canvas id="easy-visitor-os-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
+        <canvas id="easy-visitor-os-chart" width="150" height="150" aria-label="<?php print t('Doughnut chart of OS names'); ?>" role="img"></canvas>
         <div id="easy-visitor-os-legend" class="chart-legend"></div>
       </div>
     </div>
     <div>
       <div class="chart-title"><?php print t('Timezones'); ?></div>
       <div class="pie-chart-wrapper">
-        <canvas id="easy-visitor-timezone-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
+        <canvas id="easy-visitor-timezone-chart" width="150" height="150" aria-label="<?php print t('Doughnut chart of time zones'); ?>" role="img"></canvas>
         <div id="easy-visitor-timezone-legend" class="chart-legend"></div>
       </div>
     </div>
     <div>
       <div class="chart-title"><?php print t('Time spent on page'); ?></div>
       <div class="pie-chart-wrapper">
-        <canvas id="easy-visitor-duration-chart" width="150" height="150" aria-label="@todo" role="img"></canvas>
+        <canvas id="easy-visitor-duration-chart" width="150" height="150" aria-label="<?php print t('Doughnut chart of times'); ?>" role="img"></canvas>
         <div id="easy-visitor-duration-legend" class="chart-legend"></div>
       </div>
     </div>
@@ -66,7 +66,7 @@
   <div class="easy-visitor-history-wrapper">
     <div class="easy-visitor-history-toggle"><?php print $history_select; ?></div>
     <div class="chart-title"><?php print t('Page hits per day'); ?></div>
-    <canvas id="easy-visitor-history-chart" width="1156" height="400" aria-label="@todo" role="img"></canvas>
+    <canvas id="easy-visitor-history-chart" width="1156" height="400" aria-label="<?php print t('Line chart of visits per day'); ?>" role="img"></canvas>
   </div>
   <h2><?php print t('High score lists'); ?></h2>
   <div class="easy-visitor-top-ten-wrapper">
