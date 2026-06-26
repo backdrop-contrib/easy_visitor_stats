@@ -244,6 +244,8 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
     '#title' => t('Top external referrers'),
   );
   $variables['top_ten'] = backdrop_render($top_ten);
+
+  // @todo Idea: some sort of year overview (granulariy month).
 }
 
 /**

@@ -35,9 +35,8 @@
      *
      * @param object chartObj
      * @param string fetchUrl
-     * @param string title
      */
-    updateChart: function (chartObj, fetchUrl, title) {
+    updateChart: function (chartObj, fetchUrl) {
       fetch(fetchUrl)
         .then(function(response) {
           return response.json();
@@ -49,7 +48,6 @@
           }
           chartObj.data.labels = response.labels;
           chartObj.data.datasets[0].data = response.values;
-          chartObj.options.plugins.title.text = title;
           // Add some padding above.
           chartObj.options.scales.y.suggestedMax = Math.max(...response.values) + 1;
           chartObj.update();
@@ -103,12 +101,12 @@
       const toggleHitsElement = document.getElementById('hits-graph-date-toggle');
       const initialHitsValues = toggleHitsElement.value.split(',');
       const fetchUrlHits = hitsDataFetchBase + initialHitsValues[0] + '/' + initialHitsValues[1];
-      Backdrop.behaviors.easyVisitorCharts.updateChart(hitsChart, fetchUrlHits, '');
+      Backdrop.behaviors.easyVisitorCharts.updateChart(hitsChart, fetchUrlHits);
 
       toggleHitsElement.addEventListener('change', function (event) {
-        let newValues = event.target.value.split(',');
-        let newFetchUrl = hitsDataFetchBase + newValues[0] + '/' + newValues[1];
-        Backdrop.behaviors.easyVisitorCharts.updateChart(hitsChart, newFetchUrl, '');
+        const newValues = event.target.value.split(',');
+        const newFetchUrl = hitsDataFetchBase + newValues[0] + '/' + newValues[1];
+        Backdrop.behaviors.easyVisitorCharts.updateChart(hitsChart, newFetchUrl);
       });
 
       // Page hits per day chart.
@@ -123,10 +121,6 @@
           legend: {
             display: false,
           },
-          title: {
-            display: true,
-            text: '',
-          }
         },
       };
       if (!showAnimation) {
@@ -141,14 +135,12 @@
       const toggleHistoryElement = document.getElementById('history-graph-date-toggle');
       const initialHistoryValues = toggleHistoryElement.value.split(',');
       const historyFetchUrl = historyDataFetchBase + initialHistoryValues[0] + '/' + initialHistoryValues[1];
-      let title = toggleHistoryElement.options[toggleHistoryElement.selectedIndex].text;
-      Backdrop.behaviors.easyVisitorCharts.updateChart(historyChart, historyFetchUrl, title);
+      Backdrop.behaviors.easyVisitorCharts.updateChart(historyChart, historyFetchUrl);
 
       toggleHistoryElement.addEventListener('change', function (event) {
-        let newTitle = event.target.options[event.target.selectedIndex].text;
-        let newValues = event.target.value.split(',');
-        let newFetchUrl = fetchUrlBase + newValues[0] + '/' + newValues[1];
-        Backdrop.behaviors.easyVisitorCharts.updateChart(historyChart, newFetchUrl, newTitle);
+        const newValues = event.target.value.split(',');
+        const newFetchUrl = historyDataFetchBase + newValues[0] + '/' + newValues[1];
+        Backdrop.behaviors.easyVisitorCharts.updateChart(historyChart, newFetchUrl);
       });
 
       // Doughnut charts, actually.
@@ -171,7 +163,7 @@
       // Browser chart.
       const browserChartElement = document.getElementById('easy-visitor-browser-chart');
       pieChartOptions.plugins.htmlLegend.containerID = 'easy-visitor-browser-legend';
-      const browserChart = new Chart(browserChartElement, {
+      new Chart(browserChartElement, {
         type: 'doughnut',
         options: pieChartOptions,
         data: settings.easyVisitorStats.browserData,
@@ -181,7 +173,7 @@
       // OS chart.
       const osChartElement = document.getElementById('easy-visitor-os-chart');
       pieChartOptions.plugins.htmlLegend.containerID = 'easy-visitor-os-legend';
-      const osChart = new Chart(osChartElement, {
+      new Chart(osChartElement, {
         type: 'doughnut',
         options: pieChartOptions,
         data: settings.easyVisitorStats.osData,
@@ -191,7 +183,7 @@
       // Timezone chart.
       const timezoneChartElement = document.getElementById('easy-visitor-timezone-chart');
       pieChartOptions.plugins.htmlLegend.containerID = 'easy-visitor-timezone-legend';
-      const timezoneChart = new Chart(timezoneChartElement, {
+      new Chart(timezoneChartElement, {
         type: 'doughnut',
         options: pieChartOptions,
         data: settings.easyVisitorStats.timezoneData,
@@ -201,7 +193,7 @@
       // Duration chart.
       const durationChartElement = document.getElementById('easy-visitor-duration-chart');
       pieChartOptions.plugins.htmlLegend.containerID = 'easy-visitor-duration-legend';
-      const durationChart = new Chart(durationChartElement, {
+      new Chart(durationChartElement, {
         type: 'doughnut',
         options: pieChartOptions,
         data: settings.easyVisitorStats.durationData,
