@@ -162,7 +162,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   $toggle_select = array(
     '#type' => 'select',
     '#title' => t('Select range'),
-    '#title_display' => 'none',
+    '#title_display' => 'invisible',
     '#options' => $options,
     '#default_value' => '',
     '#attributes' => array(
