@@ -15,13 +15,20 @@ function easy_visitor_stats_menu() {
     'delivery callback' => '_easy_visitor_stats_no_content',
     'access callback' => TRUE,
   );
-  // Fetch data for report via AJAX post:
+  // Dynamically fetch chart data for report via AJAX post:
   $items['easy-visitor-stats-fetch/history'] = array(
     'title' => 'Stats data',
-    'page callback' => '_easy_visitor_stats_ajax_fetch',
+    'page callback' => '_easy_visitor_stats_ajax_history',
     'delivery callback' => 'backdrop_json_deliver',
     'access arguments' => array('access statistics dashboard'),
   );
+  $items['easy-visitor-stats-fetch/hits'] = array(
+    'title' => 'Stats data',
+    'page callback' => '_easy_visitor_stats_ajax_hits',
+    'delivery callback' => 'backdrop_json_deliver',
+    'access arguments' => array('access statistics dashboard'),
+  );
+  // Pages.
   $items['admin/reports/easy-visitor-stats'] = array(
     'title' => 'Easy Visitor Statistics',
     'page callback' => '_easy_visitor_stats_dashboard',
@@ -73,6 +80,7 @@ function easy_visitor_stats_theme($existing, $type, $theme, $path) {
         'infotext' => '',
         'total_page_hits' => 0,
         'average_time_spent' => '0.00s',
+        'hits_select' => '',
         'history_select' => '',
         'top_ten' => '',
       ),
@@ -311,11 +319,15 @@ function easy_visitor_stats_config_info() {
   return $prefixes;
 }
 
-function _easy_visitor_stats_ajax_fetch() {
+/**
+ * AJAX endpoint for easy-visitor-stats-fetch/history.
+ */
+function _easy_visitor_stats_ajax_history() {
   $args = arg();
   $date_pattern = '/^\d{4}-\d{2}-\d{2}$/';
   if (count($args) != 4 || preg_match($date_pattern, $args[2]) != 1 || preg_match($date_pattern, $args[3]) != 1) {
     backdrop_not_found();
+    return;
   }
 
   $start = $args[2];
@@ -341,6 +353,56 @@ function _easy_visitor_stats_ajax_fetch() {
     $day_ranges[$key] = 0;
   }
   $merged_data = array_merge($day_ranges, $history_hits);
+  $chart_data = array(
+    'labels' => array_keys($merged_data),
+    'values' => array_values($merged_data),
+  );
+
+  return $chart_data;
+}
+
+/**
+ * AJAX endpoint for easy-visitor-stats-fetch/hits.
+ */
+function _easy_visitor_stats_ajax_hits() {
+  $args = arg();
+  $arg_pattern = '/^\d+$/';
+  if (count($args) != 4 || preg_match($arg_pattern, $args[2]) != 1 || preg_match($arg_pattern, $args[3]) != 1) {
+    backdrop_not_found();
+    return;
+  }
+
+  $start = (int) $args[2];
+  $end = (int) $args[3];
+  // Hits based on hourly data.
+  $data = db_query("SELECT timestamp FROM {easy_visitor_details} WHERE timestamp >= :start AND timestamp <= :end", array(
+    ':start' => $start,
+    ':end' => $end,
+  ))->fetchAllAssoc('timestamp');
+  $timestamps = array_keys($data);
+
+  $site_timezone = new DateTimeZone(config_get('system.date','default_timezone'));
+  $begin = new DateTime('@' . strtotime('1 week ago'));
+  $begin->setTimezone($site_timezone);
+  $end = new dateTime('@' . strtotime('now'));
+  $end->setTimezone($site_timezone);
+  $hour_ranges = array();
+  while($begin < $end) {
+    $begin->modify('+1 hour');
+    $key = $begin->format('Y-m-d H');
+    $hour_ranges[$key] = 0;
+  }
+  $hits = array();
+  foreach ($timestamps as $timestamp) {
+    $date = format_date($timestamp, 'custom', 'Y-m-d H');
+    if (array_key_exists($date, $hits)) {
+      $hits[$date] = $hits[$date] + 1;
+    }
+    else {
+      $hits[$date] = 1;
+    }
+  }
+  $merged_data = array_merge($hour_ranges, $hits);
   $chart_data = array(
     'labels' => array_keys($merged_data),
     'values' => array_values($merged_data),

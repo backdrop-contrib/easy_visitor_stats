@@ -6,6 +6,7 @@
  * - $infotext
  * - $total_page_hits
  * - $average_time_spent
+ * - $hits_select
  * - $history_select
  * - $top_ten
  */
@@ -28,6 +29,7 @@
   </div>
   <h2><?php print t('Recent visits'); ?></h2>
   <div class="easy-visitor-hits-wrapper">
+    <div class="easy-visitor-hits-toggle"><?php print $hits_select; ?></div>
     <div class="chart-title"><?php print t('Page hits per hour'); ?></div>
     <canvas id="easy-visitor-hits-chart" width="1156" height="400" aria-label="<?php print t('Line chart of hourly visits'); ?>" role="img"></canvas>
   </div>

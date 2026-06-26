@@ -25,36 +25,38 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   $variables['average_time_spent'] = number_format($average, 2);
 
   // Hits based on hourly data.
-  // @todo needs to be AJAX.
-  $timestamps = array_column($rows, 'timestamp');
+  $date = new DateTime('now');
+  $first_timestamp = $rows[0]['timestamp'];
   $site_timezone = new DateTimeZone(config_get('system.date','default_timezone'));
-  $begin = new DateTime('@' . strtotime('1 week ago'));
-  $begin->setTimezone($site_timezone);
-  $end = new dateTime('@' . strtotime('now'));
-  $end->setTimezone($site_timezone);
-  $hour_ranges = array();
-  while($begin < $end) {
-    $begin->modify('+1 hour');
-    $key = $begin->format('Y-m-d H');
-    $hour_ranges[$key] = 0;
+  $min_date = new DateTime('@' . $first_timestamp);
+  $min_date->setTimezone($site_timezone);
+  $options = array();
+  $date_format_pattern = config_get('system.date', 'formats.short.pattern');// @todo localized format ... or helper func
+  while ($date > $min_date) {
+    $key = $date->format('U');
+    $label = $date->format($date_format_pattern);
+    $date->modify('-1 week');
+    $key = $date->format('U') . ',' . $key;
+    $label = $date->format($date_format_pattern) . ' - ' . $label;
+    $options[$key] = $label;
   }
-  $hits = array();
-  foreach ($timestamps as $timestamp) {
-    $date = format_date($timestamp, 'custom', 'Y-m-d H');
-    if (array_key_exists($date, $hits)) {
-      $hits[$date] = $hits[$date] + 1;
-    }
-    else {
-      $hits[$date] = 1;
-    }
-  }
-  $hits_range = array_merge($hour_ranges, $hits);
+  $toggle_select = array(
+    '#type' => 'select',
+    '#title' => t('Select range'),
+    '#title_display' => 'invisible',
+    '#options' => $options,
+    '#default_value' => '',
+    '#attributes' => array(
+      'id' => 'hits-graph-date-toggle',
+    ),
+  );
+  $variables['hits_select'] = backdrop_render($toggle_select);
   $hits_chart_data = array(
-    'labels' => array_keys($hits_range),
+    'labels' => array(),
     'datasets' => array(
       0 => array(
         'label' => 'Page hits',
-        'data' => array_values($hits_range),
+        'data' => array(),
       )
     ),
   );
@@ -170,12 +172,12 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   );
   $variables['history_select'] = backdrop_render($toggle_select);
 
-  // Reusing variables from above.
-  $first_timestamp = reset($timestamps);
+  // Infotext for details element on top.
+  $first_row = reset($rows);
   $config = config('easy_visitor_stats.settings');
   $infotext = array();
   $infotext[] = t('Detailed data are available from @start_date until now. Detailed data include URL, referrer, duration, browser, OS and timezone info. These detailed data get dropped after @days days.', array(
-    '@start_date' => format_date($first_timestamp),
+    '@start_date' => format_date($first_row['timestamp']),
     '@days' => $config->get('keep_detailed_days'),
   ));
   $infotext[] = t('History data are available from @start_date. History data only contain hit count per day. These data get dropped after @months months.', array(
@@ -194,6 +196,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
       'timezoneData' => $timezone_chart_data,
       'durationData' => $duration_chart_data,
       'historyDataFetchBase' => base_path() . 'easy-visitor-stats-fetch/history/',
+      'hitsDataFetchBase' => base_path() . 'easy-visitor-stats-fetch/hits/',
       'showAnimation' => (bool) config_get('easy_visitor_stats.settings', 'show_animations'),
     ),
   ), 'setting');
