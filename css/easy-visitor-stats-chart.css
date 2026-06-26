@@ -16,10 +16,9 @@
 }
 .chart-title {
   font-weight: bold;
-  text-align: center;
 }
-.easy-visitor-history-wrapper .chart-title {
-  text-align: initial;
+.easy-visitor-pie-wrapper .chart-title {
+  text-align: center;
 }
 .easy-visitor-top-ten {
   display: flex;
@@ -40,8 +39,14 @@
 .easy-visitor-boxes .box div {
   font-size: 2rem;
 }
-.form-type-select {
-  float: inline-end;
+.chart-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em 2em;
+  justify-content: space-between;
+  align-items: center;
+}
+.easy-visitor-stats-dashboard .form-type-select {
   margin: 0;
 }
 .legend-color-box {

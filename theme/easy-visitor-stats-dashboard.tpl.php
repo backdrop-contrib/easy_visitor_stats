@@ -29,8 +29,10 @@
   </div>
   <h2><?php print t('Recent visits'); ?></h2>
   <div class="easy-visitor-hits-wrapper">
-    <div class="easy-visitor-hits-toggle"><?php print $hits_select; ?></div>
-    <div class="chart-title"><?php print t('Page hits per hour'); ?></div>
+    <div class="chart-header">
+      <div class="chart-title"><?php print t('Page hits per hour'); ?></div>
+      <?php print $hits_select; ?>
+    </div>
     <canvas id="easy-visitor-hits-chart" width="1156" height="400" aria-label="<?php print t('Line chart of hourly visits'); ?>" role="img"></canvas>
   </div>
   <!-- Begin pie charts -->
@@ -68,8 +70,10 @@
   <!-- End pie charts -->
   <h2><?php print t('Visits history'); ?></h2>
   <div class="easy-visitor-history-wrapper">
-    <div class="easy-visitor-history-toggle"><?php print $history_select; ?></div>
-    <div class="chart-title"><?php print t('Page hits per day'); ?></div>
+    <div class="chart-header">
+      <div class="chart-title"><?php print t('Page hits per day'); ?></div>
+      <?php print $history_select; ?>
+    </div>
     <canvas id="easy-visitor-history-chart" width="1156" height="400" aria-label="<?php print t('Line chart of visits per day'); ?>" role="img"></canvas>
   </div>
   <h2><?php print t('High score lists'); ?></h2>
