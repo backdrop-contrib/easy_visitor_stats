@@ -32,7 +32,7 @@
   flex-wrap: wrap;
   gap: 1em 3em;
   justify-content: space-around;
-  margin: 2em 0;
+  margin: 1em 0 2em;
 }
 .easy-visitor-boxes .box {
   text-align: center;
@@ -49,5 +49,18 @@
   width: 20px;
   height: 10px;
   margin-inline-end: .5em;
+  vertical-align: middle;
+}
+.easy-visitor-stats-dashboard details {
+  background: inherit;
+  border: none;
+  padding: 0;
+}
+.easy-visitor-stats-dashboard summary {
+  float: inline-end;
+}
+.easy-visitor-stats-dashboard details .icon {
+  width: 1.5em;
+  height: 1.5em;
   vertical-align: middle;
 }

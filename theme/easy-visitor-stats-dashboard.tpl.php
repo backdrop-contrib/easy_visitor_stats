@@ -12,7 +12,9 @@
 ?>
 <div class="easy-visitor-stats-dashboard">
   <div class="stats-info">
+    <details><summary><?php print icon('question', array('alt' => t('Information'))); ?></summary><p>
     <?php print $infotext; ?>
+    </p></details>
   </div>
   <div class="easy-visitor-boxes">
     <div class="box">

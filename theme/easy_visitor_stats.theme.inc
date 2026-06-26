@@ -7,7 +7,7 @@
  * Implements
  */
 function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
-  // Get all data.
+  // Get all data. @todo "order by" necessary?
   $data = db_query("SELECT * FROM {easy_visitor_details}")->fetchAllAssoc('did');
   $rows = array();
   foreach ($data as $values) {
@@ -15,8 +15,6 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
     unset($values['did']);
     $rows[] = $values;
   }
-  // @todo proper translatable string
-  $variables['infotext'] = 'Detailed data are available from @start_date until now. Detailed data include URL, referrer, duration, browser, OS and timezone info. These detailed data get dropped after @todo.';
   $variables['total_page_hits'] = count($rows);
 
   $durations = array_filter(array_column($rows, 'duration'));
@@ -27,6 +25,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   $variables['average_time_spent'] = number_format($average, 2);
 
   // Hits based on hourly data.
+  // @todo needs to be AJAX.
   $timestamps = array_column($rows, 'timestamp');
   $site_timezone = new DateTimeZone(config_get('system.date','default_timezone'));
   $begin = new DateTime('@' . strtotime('1 week ago'));
@@ -170,6 +169,20 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
     ),
   );
   $variables['history_select'] = backdrop_render($toggle_select);
+
+  // Reusing variables from above.
+  $first_timestamp = reset($timestamps);
+  $config = config('easy_visitor_stats.settings');
+  $infotext = array();
+  $infotext[] = t('Detailed data are available from @start_date until now. Detailed data include URL, referrer, duration, browser, OS and timezone info. These detailed data get dropped after @days days.', array(
+    '@start_date' => format_date($first_timestamp),
+    '@days' => $config->get('keep_detailed_days'),
+  ));
+  $infotext[] = t('History data are available from @start_date. History data only contain hit count per day. These data get dropped after @months months.', array(
+    '@start_date' => $min_date->format($date_format_pattern),
+    '@months' => $config->get('keep_history_months'),
+  ));
+  $variables['infotext'] = implode('<br>', $infotext);
 
   // Collect all the charts data.
   backdrop_add_js(array(
