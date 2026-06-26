@@ -84,5 +84,20 @@ function _easy_visitor_stats_settings_form($form, $form_state) {
     '#default_value' => $config->get('show_animations'),
     '#description' => t('Animated charts can be nice, but might also be distracting.'),
   );
+  $form['#submit'][] = '_easy_visitor_stats_check_site_key';
   return system_settings_form($form);
+}
+
+/**
+ * Additional submission callback for settings form.
+ */
+function _easy_visitor_stats_check_site_key($form, $form_state) {
+  // This key gets created on install, and even if it's missing it's not fatal,
+  // so just to make sure there is one.
+  $site_key = state_get('easyVisitorStatsSiteKey', FALSE);
+  if (!$site_key) {
+    $site_key = backdrop_random_key(16);
+    state_set('easyVisitorStatsSiteKey', $site_key);
+    backdrop_set_message(t('A site key has been generated, as it was missing.'));
+  }
 }
