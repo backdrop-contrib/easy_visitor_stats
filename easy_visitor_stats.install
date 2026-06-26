@@ -96,3 +96,30 @@ function  easy_visitor_stats_schema() {
   );
   return $schema;
 }
+
+/**
+ * Implements hook_install().
+ */
+function easy_visitor_stats_install() {
+  // This format is only available in native Backdrop installs, but missing in
+  // migrated sites.
+  $date_config = config('system.date');
+  if (!$date_config->get('formats.date_only')) {
+    $date_only = array(
+      'label' => 'Date only',
+      'pattern' => 'd/m/Y',
+      'module' => 'system',
+    );
+    $config->set('formats.date_only', $date_only);
+  }
+  // Generate site key used in AJAX reporting.
+  $site_key = backdrop_random_key(16);
+  state_set('easyVisitorStatsSiteKey', $site_key);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function easy_visitor_stats_uninstall() {
+  state_del('easyVisitorStatsSiteKey');
+}
