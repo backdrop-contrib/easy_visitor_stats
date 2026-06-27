@@ -110,7 +110,8 @@ function easy_visitor_stats_install() {
       'pattern' => 'd/m/Y',
       'module' => 'system',
     );
-    $config->set('formats.date_only', $date_only);
+    $date_config->set('formats.date_only', $date_only);
+    $date_config->save();
   }
   // Generate site key used in AJAX reporting.
   $site_key = backdrop_random_key(16);
