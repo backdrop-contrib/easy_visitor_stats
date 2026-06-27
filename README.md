@@ -72,8 +72,8 @@ Get all the whistles and bells.
 [Matomo Analytics](https://backdropcms.org/project/matomo) and
 [Google Analytics](https://backdropcms.org/project/googleanalytics)
 
-But very complex and a challenge to set up. Most sites simply don't need such
-detailed data, so why collecting in the first place?
+For professionals, but pretty complex and a challenge to set up. Most sites
+simply don't need such detailed data, so why collecting in the first place?
 
 Not trivial to comply with GDPR with Matomo, probably impossible with Google
 Analytics. The latter for sure requires a cookie banner and consent.
