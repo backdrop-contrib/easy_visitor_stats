@@ -43,10 +43,11 @@ Bugs and Feature requests should be reported in the [Issue Queue](https://github
 
 ## Known Issues
 
-- Parts of the dashboard aren't very accessible (WCAG), as the charts are
-  images, hard if not impossible to provide useful text alternatives for.
-- If the visitor's browser has some script-blocker enabled, those visits won't
-  get counted.
+- Parts of the dashboard aren't very accessible (WCAG), as the interactive
+  charts are images, hard if not impossible to provide useful text alternatives
+  for.
+- If a visitor's browser has some script-blocker enabled, those visits won't
+  get counted. Data collection depends on JavaScript.
 - Although commonly known bots get filtered out, some might still slip through,
   if they're in full disguise (don't give any clue that they're bots).
 
