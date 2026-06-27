@@ -2,5 +2,5 @@ type = module
 name = Easy Visitor Statistics
 description = Web anaytics made easy, zero setup required, ships with pretty charts.
 backdrop = 1.x
-
+maintainers[indigoxela] = indigoxela
 configure = admin/reports/easy-visitor-stats/settings
