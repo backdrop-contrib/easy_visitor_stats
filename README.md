@@ -41,6 +41,15 @@ on admin/config/people/permissions.
 
 Bugs and Feature requests should be reported in the [Issue Queue](https://github.com/backdrop-contrib/easy_visitor_stats/issues)
 
+## Known Issues
+
+- Parts of the dashboard aren't very accessible (WCAG), as the charts are
+  images, hard if not impossible to provide useful text alternatives for.
+- If the visitor's browser has some script-blocker enabled, those visits won't
+  get counted.
+- Although commonly known bots get filtered out, some might still slip through,
+  if they're in full disguise (don't give any clue that they're bots).
+
 ## Current Maintainers
 
 - [Indigoxela](https://github.com/indigoxela)
