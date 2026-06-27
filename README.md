@@ -31,8 +31,7 @@ admin/reports/easy-visitor-stats, but a few tweaks are available:
 
 - Tweak the time to keep data on admin/reports/easy-visitor-stats/settings
   (the module ships with sane defaults)
-- Show charts with animations, if you prefer
-  (a little eye candy)
+- Show charts with animations, if you prefer a little more eye candy
 
 Allow other roles to access the dashboard or raw data by granting permission
 on admin/config/people/permissions.
