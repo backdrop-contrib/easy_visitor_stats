@@ -26,6 +26,17 @@ website? You'll be disappointed, how few that are.
 
 Install this module using the official [Backdrop CMS instructions](https://docs.backdropcms.org/documentation/extend-with-modules)
 
+No configuration required, just visit admin/reports/easy-visitor-stats, but
+a few tweaks are available:
+
+- Tweak the time to keep data on admin/reports/easy-visitor-stats/settings
+  (the module ships with sane defaults)
+- Show chars with animations, if you prefer
+  (a little eye candy)
+
+Allow other roles to access the dashboard or raw data by granting permission
+on admin/config/people/permissions
+
 ## Issues
 
 Bugs and Feature requests should be reported in the [Issue Queue](https://github.com/backdrop-contrib/easy_visitor_stats/issues)
@@ -36,28 +47,33 @@ Bugs and Feature requests should be reported in the [Issue Queue](https://github
 
 ## Alternative solutions
 
+This module's not the only or first solution for web analytics with Backdrop
+CMs. There are a few, all with their pros and cons.
+
 ### Backdrop standalone modules
 
-[Statistics]()
+[Statistics](https://backdropcms.org/project/statistics)
 
 Only for nodes (no Yiews, Layout pages...), does not seem to filter out bots
 that execute JavaScript. The reports UI isn't great, just some tables spread
 over multiple pages.
 
-[Visitors]()
+[Visitors](https://backdropcms.org/project/visitors)
 
 Also node based (no Views or Layout pages). Probably counts all bots and
 scrapers, hard to tell what it looks like, it doesn't work with PHP 8.
 
 ### Backdrop integration of 3rd party solutions
 
-[Matomo]() and [Google Analytics]()
+[Matomo Analytics](https://backdropcms.org/project/matomo) and
+[Google Analytics](https://backdropcms.org/project/googleanalytics)
 
 Both fully blown solutions, but very complex and a challenge to set up. Most
 sites simply don't need such detailed data, so why collecting in the first
-place.
+place?
 
 Tricky to comply with GDPR with Matomo, probably impossible with Google Analytics.
+The latter for sure requires a cookie banner and consent.
 
 ### Log based analysis with Webalizer, AWstats or the like
 
