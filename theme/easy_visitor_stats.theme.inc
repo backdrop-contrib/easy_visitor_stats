@@ -26,7 +26,12 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
 
   // Hits based on hourly data.
   $date = new DateTime('now');
-  $first_timestamp = $rows[0]['timestamp'];
+  if (count($rows)) {
+    $first_timestamp = $rows[0]['timestamp'];
+  }
+  else {
+    $first_timestamp = REQUEST_TIME - 60;
+  }
   $site_timezone = new DateTimeZone(config_get('system.date','default_timezone'));
   $min_date = new DateTime('@' . $first_timestamp);
   $min_date->setTimezone($site_timezone);
@@ -97,14 +102,14 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   );
 
   // More detailed duration data, reuses $durations from boxes above.
-  $range_seconds = array(
-    '0s - 15s' => 0,
-    '15s - 60s' => 0,
-    '60s - 300s' => 0,
-    'longer' => 0,
-  );
-  $ranges = array();
+  $range_seconds = array();
   if (count($durations)) {
+    $range_seconds = array(
+      '0s - 15s' => 0,
+      '15s - 60s' => 0,
+      '60s - 300s' => 0,
+      'longer' => 0,
+    );
     foreach ($durations as $duration_ms) {
       $duration = $duration_ms / 1000;
       if ($duration > 300) {
@@ -144,6 +149,9 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
 
   $date = new DateTime('now');
   $min_date_string = db_query("SELECT MIN(date) FROM {easy_visitor_history}")->fetchField();
+  if (!$min_date_string) {
+    $min_date_string = '1 minute ago';
+  }
   $min_date = new DateTime($min_date_string);
   $options = array();
   while ($date > $min_date) {
@@ -170,7 +178,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   $config = config('easy_visitor_stats.settings');
   $infotext = array();
   $infotext[] = t('Detailed data are available from @start_date until now. Detailed data include URL, referrer, duration, browser, OS and timezone info. These detailed data get dropped after @days days.', array(
-    '@start_date' => format_date($rows[0]['timestamp']),
+    '@start_date' => format_date($first_timestamp),// Re-using variable from above.
     '@days' => $config->get('keep_detailed_days'),
   ));
   $infotext[] = t('History data are available from @start_date. History data only contain hit count per day. These data get dropped after @months months.', array(
