@@ -1,12 +1,13 @@
 <?php
 /**
  * @file
+ * Schema and install hooks for Easy Visitor Statistics.
  */
 
 /**
  * Implements hook_schema().
  */
-function  easy_visitor_stats_schema() {
+function easy_visitor_stats_schema() {
   $schema['easy_visitor_details'] = array(
     'fields' => array(
       'did' => array(
