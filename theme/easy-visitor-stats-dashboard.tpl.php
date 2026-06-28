@@ -1,6 +1,7 @@
 <?php
 /**
- * Template for the dashboard.
+ * @file
+ * Template file for the dashboard.
  *
  * Available variables:
  * - $infotext
