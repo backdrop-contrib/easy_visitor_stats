@@ -64,6 +64,7 @@
       // Set some common defaults.
       Chart.defaults.color = styles.color;
       Chart.defaults.scale.ticks.autoSkipPadding = 15;
+      Chart.defaults.scales.linear.min = 0;
       Chart.defaults.elements.point.hitRadius = 10;
       Chart.defaults.elements.line.tension = 0.2;
       Chart.defaults.plugins.legend.display = false;
@@ -77,12 +78,6 @@
       const hitsChartElement = document.getElementById('easy-visitor-hits-chart');
       const hitsData = settings.easyVisitorStats.hitsData;
       const hitsChartOptions = {
-        scales: {
-          y: {
-            min: 0,
-            suggestedMax: Math.max(...hitsData.datasets[0].data) + 1,
-          },
-        },
         elements: {
           line: {
             fill: 'origin',
@@ -110,13 +105,7 @@
 
       // Page hits per day chart.
       const historyChartElement = document.getElementById('easy-visitor-history-chart');
-      const historyChartOptions = {
-        scales: {
-          y: {
-            min: 0,
-          }
-        },
-      };
+      const historyChartOptions = {};
       if (!showAnimation) {
         historyChartOptions.animation = false;
       }
