@@ -1,6 +1,7 @@
 <?php
 /**
  * @file
+ * Page callbacks and related helper functions for Easy Visitor Statistics.
  */
 
 /**
@@ -15,8 +16,10 @@ function _easy_visitor_stats_dashboard() {
  */
 function _easy_visitor_stats_raw() {
   $content = array();
-  // extremely crude, needs pagination, needs responsive table classes, proper header...
-  $header = array('href', 'duration', 'timezone', 'referrer', 'os', 'browser', 'timestamp', 'ip');
+  // Crude display, almost raw data, but currently only used for debugging.
+  // Maybe later implement Views integration.
+  $header = array('href', 'duration', 'timezone', 'referrer', 'os', 'browser',
+    'timestamp', 'ip');
   $data = db_query("SELECT * FROM {easy_visitor_details} ORDER BY timestamp DESC")->fetchAllAssoc('did');
 
   $page_result = array();
@@ -28,7 +31,8 @@ function _easy_visitor_stats_raw() {
   }
 
   $rows = array();
-  $today_midnight = strtotime('today midnight');// must use today to avoid weird DST shifts
+  // Use today as base to avoid DST shifts.
+  $today_midnight = strtotime('today midnight');
   foreach ($page_result as $values) {
     $values = (array) $values;
     unset($values['did']);
@@ -41,7 +45,7 @@ function _easy_visitor_stats_raw() {
     '#theme' => 'table',
     '#header' => $header,
     '#rows' => $rows,
-    '#empty' => t('No data yet.')
+    '#empty' => t('No data yet.'),
   );
   $content['pager'] = array(
     '#markup' => theme('pager', array(
@@ -98,6 +102,8 @@ function _easy_visitor_stats_check_site_key($form, $form_state) {
   if (!$site_key) {
     $site_key = backdrop_random_key(16);
     state_set('easyVisitorStatsSiteKey', $site_key);
+    // Because the easyVisitorStatsSiteKey JS setting is part of cached pages.
+    cache('page')->flush();
     backdrop_set_message(t('A site key has been generated, as it was missing.'));
   }
 }
