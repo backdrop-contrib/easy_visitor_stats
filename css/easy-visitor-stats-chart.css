@@ -20,11 +20,32 @@
 .easy-visitor-pie-wrapper .chart-title {
   text-align: center;
 }
-.easy-visitor-top-ten {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1em 3em;
-  justify-content: space-around;
+.easy-visitor-pie-wrapper > div {
+  min-width: 34%;
+}
+.easy-visitor-pie-wrapper .pie-chart-wrapper {
+  display: table;
+  margin: 0 auto;
+}
+@media (min-width: 62em) {
+  .easy-visitor-pie-wrapper > div {
+    min-width: 150px;
+  }
+}
+.easy-visitor-top-ten .item-list ol {
+  margin-inline-start: .5em;
+  margin-bottom: 2em;
+}
+@media (min-width: 62em) {
+  .easy-visitor-top-ten {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em 2em;
+    justify-content: space-around;
+  }
+  .easy-visitor-top-ten .item-list {
+    min-width: 27em;
+  }
 }
 .easy-visitor-boxes {
   display: flex;
