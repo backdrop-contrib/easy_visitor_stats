@@ -57,6 +57,7 @@
      * {@inheritdoc}
      */
     attach: function (context, settings) {
+      const chartBehavior = this;
       const showAnimation = settings.easyVisitorStats.showAnimation;
       // Inherit color from content for better readability.
       const styles = getComputedStyle(document.querySelector('.easy-visitor-boxes'));
@@ -101,12 +102,12 @@
       const toggleHitsElement = document.getElementById('hits-graph-date-toggle');
       const initialHitsValues = toggleHitsElement.value.split(',');
       const fetchUrlHits = hitsDataFetchBase + initialHitsValues[0] + '/' + initialHitsValues[1];
-      Backdrop.behaviors.easyVisitorCharts.updateChart(hitsChart, fetchUrlHits);
+      chartBehavior.updateChart(hitsChart, fetchUrlHits);
 
       toggleHitsElement.addEventListener('change', function (event) {
         const newValues = event.target.value.split(',');
         const newFetchUrl = hitsDataFetchBase + newValues[0] + '/' + newValues[1];
-        Backdrop.behaviors.easyVisitorCharts.updateChart(hitsChart, newFetchUrl);
+        chartBehavior.updateChart(hitsChart, newFetchUrl);
       });
 
       // Page hits per day chart.
@@ -135,12 +136,12 @@
       const toggleHistoryElement = document.getElementById('history-graph-date-toggle');
       const initialHistoryValues = toggleHistoryElement.value.split(',');
       const historyFetchUrl = historyDataFetchBase + initialHistoryValues[0] + '/' + initialHistoryValues[1];
-      Backdrop.behaviors.easyVisitorCharts.updateChart(historyChart, historyFetchUrl);
+      chartBehavior.updateChart(historyChart, historyFetchUrl);
 
       toggleHistoryElement.addEventListener('change', function (event) {
         const newValues = event.target.value.split(',');
         const newFetchUrl = historyDataFetchBase + newValues[0] + '/' + newValues[1];
-        Backdrop.behaviors.easyVisitorCharts.updateChart(historyChart, newFetchUrl);
+        chartBehavior.updateChart(historyChart, newFetchUrl);
       });
 
       // Doughnut charts, actually.
