@@ -24,7 +24,7 @@ function template_preprocess_easy_visitor_stats_dashboard(array &$variables) {
   }
   $variables['average_time_spent'] = number_format($average, 2);
 
-  // Hits based on hourly data.
+  // Build available ranges for "Recent visits".
   $date = new DateTime('now');
   if (count($rows)) {
     $first_timestamp = $rows[0]['timestamp'];
@@ -149,6 +149,7 @@ function template_preprocess_easy_visitor_stats_dashboard(array &$variables) {
     ),
   );
 
+  // Build availabe ranges for "Visits history".
   $date = new DateTime('now');
   $min_date_string = db_query("SELECT MIN(date) FROM {easy_visitor_history}")->fetchField();
   if (!$min_date_string) {
@@ -204,6 +205,7 @@ function template_preprocess_easy_visitor_stats_dashboard(array &$variables) {
     ),
   ), 'setting');
 
+  // Build markup for "High score lists".
   $top_ten = array();
   $top_ten['top_ten_wrapper'] = array(
     '#type' => 'container',
