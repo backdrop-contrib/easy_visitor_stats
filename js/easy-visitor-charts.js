@@ -61,10 +61,13 @@
       const showAnimation = settings.easyVisitorStats.showAnimation;
       // Inherit color from content for better readability.
       const styles = getComputedStyle(document.querySelector('.easy-visitor-boxes'));
+      // Set some common defaults.
       Chart.defaults.color = styles.color;
       Chart.defaults.scale.ticks.autoSkipPadding = 15;
       Chart.defaults.elements.point.hitRadius = 10;
       Chart.defaults.elements.line.tension = 0.2;
+      Chart.defaults.plugins.legend.display = false;
+      Chart.overrides.doughnut.plugins.legend.display = false;
 
       // Fetch dynamically from there.
       const historyDataFetchBase = settings.easyVisitorStats.historyDataFetchBase;
@@ -78,11 +81,6 @@
           y: {
             min: 0,
             suggestedMax: Math.max(...hitsData.datasets[0].data) + 1,
-          },
-        },
-        plugins: {
-          legend: {
-            display: false,
           },
         },
         elements: {
@@ -118,11 +116,6 @@
             min: 0,
           }
         },
-        plugins: {
-          legend: {
-            display: false,
-          },
-        },
       };
       if (!showAnimation) {
         historyChartOptions.animation = false;
@@ -150,9 +143,6 @@
         maintainAspectRatio: false,
         radius: 70,
         plugins: {
-          legend: {
-            display: false,
-          },
           htmlLegend: {
             containerID: '',
           },
