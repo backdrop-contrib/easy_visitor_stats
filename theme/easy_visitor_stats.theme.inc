@@ -180,11 +180,11 @@ function template_preprocess_easy_visitor_stats_dashboard(array &$variables) {
   // Infotext for details element on top.
   $config = config('easy_visitor_stats.settings');
   $infotext = array();
-  $infotext[] = t('Detailed data are available from @start_date until now. Detailed data include URL, referrer, duration, browser, OS and timezone info. Detailed data get dropped when older than @days days.', array(
+  $infotext[] = t('Detailed data are available from @start_date until now. They include URL, referrer, duration, browser, OS and timezone info. Detailed data get dropped when older than @days days.', array(
     '@start_date' => format_date($first_timestamp),// Re-use var from above.
     '@days' => $config->get('keep_detailed_days'),
   ));
-  $infotext[] = t('History data are available from @start_date. History data only contain hit count per day. History data get dropped when older than @months months.', array(
+  $infotext[] = t('History data are available from @start_date, they only contain hit count per day. History data get dropped when older than @months months.', array(
     '@start_date' => format_date($min_date->format('U'), 'date_only'),
     '@months' => $config->get('keep_history_months'),
   ));
