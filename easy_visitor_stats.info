@@ -4,3 +4,6 @@ description = Web anaytics made easy, zero setup required, ships with pretty cha
 backdrop = 1.x
 maintainers[indigoxela] = indigoxela
 configure = admin/reports/easy-visitor-stats/settings
+
+tags[] = Analytics
+tags[] = Statistic
