@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
+ * Theme preprocess for Easy Visitor Statistics.
  */
 
 /**
- * Implements
+ * Implements template_preprocess_HOOK().
  */
-function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
-  // Get all data. @todo "order by" necessary?
+function template_preprocess_easy_visitor_stats_dashboard(array &$variables) {
   $data = db_query("SELECT * FROM {easy_visitor_details}")->fetchAllAssoc('did');
   $rows = array();
   foreach ($data as $values) {
@@ -32,7 +32,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   else {
     $first_timestamp = REQUEST_TIME - 60;
   }
-  $site_timezone = new DateTimeZone(config_get('system.date','default_timezone'));
+  $site_timezone = new DateTimeZone(config_get('system.date', 'default_timezone'));
   $min_date = new DateTime('@' . $first_timestamp);
   $min_date->setTimezone($site_timezone);
   $options = array();
@@ -55,26 +55,28 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
     ),
   );
   $variables['hits_select'] = backdrop_render($toggle_select);
+  // Line chart, granularity hour. Actual data get fetched dynamically.
   $hits_chart_data = array(
     'labels' => array(),
     'datasets' => array(
       0 => array(
-        'label' => 'Page hits',
+        'label' => t('Page hits'),
         'data' => array(),
-      )
+      ),
     ),
   );
 
+  // Doughnut charts of detailed data.
   $browser_stats = array_count_values(array_column($rows, 'browser'));
   arsort($browser_stats);
   $browser_chart_data = array(
     'labels' => array_keys($browser_stats),
     'datasets' => array(
       0 => array(
-        'label' => 'Browsers',
+        'label' => t('Browsers'),
         'data' => array_values($browser_stats),
       ),
-    )
+    ),
   );
 
   $os_stats = array_count_values(array_column($rows, 'os'));
@@ -83,10 +85,10 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
     'labels' => array_keys($os_stats),
     'datasets' => array(
       0 => array(
-        'label' => 'OS',
+        'label' => t('OS'),
         'data' => array_values($os_stats),
       ),
-    )
+    ),
   );
 
   $timezone_stats = array_count_values(array_column($rows, 'timezone'));
@@ -95,10 +97,10 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
     'labels' => array_keys($timezone_stats),
     'datasets' => array(
       0 => array(
-        'label' => 'Timezone',
+        'label' => t('Timezone'),
         'data' => array_values($timezone_stats),
       ),
-    )
+    ),
   );
 
   // More detailed duration data, reuses $durations from boxes above.
@@ -130,20 +132,20 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
     'labels' => array_keys($range_seconds),
     'datasets' => array(
       0 => array(
-        'label' => 'Time spent on page',
+        'label' => t('Time spent on page'),
         'data' => array_values($range_seconds),
       ),
     ),
   );
 
-  // Simple line chart, granularity day. Actual data get fetched dynamically.
+  // Line chart, granularity day. Actual data get fetched dynamically.
   $history_chart_data = array(
     'labels' => array(),
     'datasets' => array(
       0 => array(
-        'label' => 'Page hits',
+        'label' => t('Page hits'),
         'data' => array(),
-      )
+      ),
     ),
   );
 
@@ -177,11 +179,11 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
   // Infotext for details element on top.
   $config = config('easy_visitor_stats.settings');
   $infotext = array();
-  $infotext[] = t('Detailed data are available from @start_date until now. Detailed data include URL, referrer, duration, browser, OS and timezone info. These detailed data get dropped after @days days.', array(
-    '@start_date' => format_date($first_timestamp),// Re-using variable from above.
+  $infotext[] = t('Detailed data are available from @start_date until now. Detailed data include URL, referrer, duration, browser, OS and timezone info. Detailed data get dropped when older than @days days.', array(
+    '@start_date' => format_date($first_timestamp),// Re-use var from above.
     '@days' => $config->get('keep_detailed_days'),
   ));
-  $infotext[] = t('History data are available from @start_date. History data only contain hit count per day. These data get dropped after @months months.', array(
+  $infotext[] = t('History data are available from @start_date. History data only contain hit count per day. History data get dropped when older than @months months.', array(
     '@start_date' => format_date($min_date->format('U'), 'date_only'),
     '@months' => $config->get('keep_history_months'),
   ));
@@ -257,7 +259,7 @@ function template_preprocess_easy_visitor_stats_dashboard(&$variables) {
 }
 
 /**
- * Helper function to filter out empty or referrers from this site.
+ * Helper function to filter out empty or internal referrers.
  */
 function _easy_visitor_stats_filter_referrers(array $referrer_data) {
   global $base_url;
