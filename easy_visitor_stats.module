@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Another crazy idea.
+ * Hook implementations and callbacks for Easy Visitor Statistics.
  */
 
 /**
@@ -59,6 +59,69 @@ function easy_visitor_stats_menu() {
 }
 
 /**
+ * Implements hook_preprocess_HOOK().
+ */
+function easy_visitor_stats_preprocess_page($variables) {
+  global $user;
+  $status = backdrop_get_http_header('Status');
+  if ($status == '404 Not Found' || $status == '403 Forbidden') {
+    return;
+  }
+  // Only anonymous.
+  if (!$user->uid) {
+    $site_key = state_get('easyVisitorStatsSiteKey', FALSE);
+    backdrop_add_js(backdrop_get_path('module', 'easy_visitor_stats') . '/js/easy-visitor-stats.js');
+    backdrop_add_js(array(
+      'easyVisitorStatsSiteKey' => $site_key,
+      'easyVisitorStatsBeaconUrl' => base_path() . 'easy-visitor-stats',
+    ), 'setting');
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function easy_visitor_stats_cron() {
+  $config = config('easy_visitor_stats.settings');
+  $details_old_date = new DateTime($config->get('keep_detailed_days') . ' days ago');
+  $history_old_date = new DateTime($config->get('keep_history_months') . ' months ago');
+  db_delete('easy_visitor_details')
+    ->condition('timestamp', $details_old_date->format('U'), '<')
+    ->execute();
+  db_delete('easy_visitor_history')
+    ->condition('date', $history_old_date->format('Y-m-d'), '<')
+    ->execute();
+}
+
+/**
+ * Implements hook_permission().
+ */
+function easy_visitor_stats_permission() {
+  $permissions = array(
+    'access statistics dashboard' => array(
+      'title' => t('Access dashboard'),
+      'description' => t('Access Easy Visitor Statistics dashboard.'),
+    ),
+    'access statistics raw data' => array(
+      'title' => t('Access raw data'),
+      'description' => t('Access Easy Visitor Statistics raw data table.'),
+    ),
+  );
+  return $permissions;
+}
+
+/**
+ * Implements hook_config_info().
+ */
+function easy_visitor_stats_config_info() {
+  $prefixes['easy_visitor_stats.settings'] = array(
+    'label' => t('Easy Visitor Stats Settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+/**
  * Implements hook_theme().
  */
 function easy_visitor_stats_theme($existing, $type, $theme, $path) {
@@ -90,7 +153,7 @@ function easy_visitor_stats_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Page callback
+ * AJAX endpoint for easy-visitor-stats.
  */
 function _easy_visitor_stats_ajax_endpoint() {
   if (state_get('maintenance_mode', FALSE) || empty($_POST)) {
@@ -171,8 +234,9 @@ function _easy_visitor_stats_ajax_endpoint() {
 function _easy_visitor_stats_no_content() {
   // According to w3.org:
   // "The server is encouraged to omit returning a response body for such
-  // requests (sendBeacon)."
-  backdrop_add_http_header('Status', '204 No Content');// seems to return 200 though...
+  // requests (sendBeacon)".
+  // @todo seems to return 200 though.
+  backdrop_add_http_header('Status', '204 No Content');
 }
 
 /**
@@ -257,69 +321,6 @@ function _easy_visitor_stats_ip_address() {
 }
 
 /**
- * Implements hook_preprocess_HOOK().
- */
-function easy_visitor_stats_preprocess_page($variables) {
-  global $user;
-  $status = backdrop_get_http_header('Status');
-  if ($status == '404 Not Found' || $status == '403 Forbidden') {
-    return;
-  }
-  // Only anonymous.
-  if (!$user->uid) {
-    $site_key = state_get('easyVisitorStatsSiteKey', FALSE);
-    backdrop_add_js(backdrop_get_path('module', 'easy_visitor_stats') . '/js/easy-visitor-stats.js');
-    backdrop_add_js(array(
-      'easyVisitorStatsSiteKey' => $site_key,
-      'easyVisitorStatsBeaconUrl' => base_path() . 'easy-visitor-stats',
-    ), 'setting');
-  }
-}
-
-/**
- * Implements hook_cron().
- */
-function easy_visitor_stats_cron() {
-  $config = config('easy_visitor_stats.settings');
-  $details_old_date = new DateTime($config->get('keep_detailed_days') . ' days ago');
-  $history_old_date = new DateTime($config->get('keep_history_months') . ' months ago');
-  db_delete('easy_visitor_details')
-    ->condition('timestamp', $details_old_date->format('U'), '<')
-    ->execute();
-  db_delete('easy_visitor_history')
-    ->condition('date', $history_old_date->format('Y-m-d'), '<')
-    ->execute();
-}
-
-/**
- * Implements hook_permission().
- */
-function easy_visitor_stats_permission() {
-  $permissions = array(
-    'access statistics dashboard' => array(
-      'title' => t('Access dashboard'),
-      'description' => t('Access Easy Visitor Statistics dashboard.'),
-    ),
-    'access statistics raw data' => array(
-      'title' => t('Access raw data'),
-      'description' => t('Access Easy Visitor Statistics raw data table.'),
-    ),
-  );
-  return $permissions;
-}
-
-/**
- * Implements hook_config_info().
- */
-function easy_visitor_stats_config_info() {
-  $prefixes['easy_visitor_stats.settings'] = array(
-    'label' => t('Easy Visitor Stats Settings'),
-    'group' => t('Configuration'),
-  );
-  return $prefixes;
-}
-
-/**
  * AJAX endpoint for easy-visitor-stats-fetch/history.
  */
 function _easy_visitor_stats_ajax_history() {
@@ -347,7 +348,7 @@ function _easy_visitor_stats_ajax_history() {
     backdrop_not_found();
   }
   $day_ranges = array($start => 0);
-  while($range_begin < $range_end) {
+  while ($range_begin < $range_end) {
     $range_begin->modify('+1 day');
     $key = $range_begin->format('Y-m-d');
     $day_ranges[$key] = 0;
@@ -387,14 +388,14 @@ function _easy_visitor_stats_ajax_hits() {
   ))->fetchAllAssoc('timestamp');
   $timestamps = array_keys($data);
 
-  $site_timezone = new DateTimeZone(config_get('system.date','default_timezone'));
+  $site_timezone = new DateTimeZone(config_get('system.date', 'default_timezone'));
   $start_date = new DateTime('@' . $start);
   $start_date->setTimezone($site_timezone);
   $end_date = new dateTime('@' . $end);
   $end_date->setTimezone($site_timezone);
 
   $hour_ranges = array();
-  while($start_date < $end_date) {
+  while ($start_date < $end_date) {
     $start_date->modify('+1 hour');
     $key = $start_date->format('Y-m-d H');
     $hour_ranges[$key] = 0;
