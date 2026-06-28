@@ -2,7 +2,7 @@
  * @file
  * Draw various charts on the reports dashboard.
  */
-(function ($) {
+(function () {
   "use strict";
 
   /**
@@ -193,4 +193,4 @@
 
     }
   };
-})(jQuery);
+})();
