@@ -374,6 +374,12 @@ function _easy_visitor_stats_ajax_hits() {
 
   $start = (int) $args[2];
   $end = (int) $args[3];
+  $max_range_size = 3600 * 24 * 30;
+  // Filter out garbage just in case.
+  if ($start > $end || $end - $start > $max_range_size) {
+    backdrop_not_found();
+    return;
+  }
   // Hits based on hourly data.
   $data = db_query("SELECT timestamp FROM {easy_visitor_details} WHERE timestamp >= :start AND timestamp <= :end", array(
     ':start' => $start,
@@ -382,14 +388,15 @@ function _easy_visitor_stats_ajax_hits() {
   $timestamps = array_keys($data);
 
   $site_timezone = new DateTimeZone(config_get('system.date','default_timezone'));
-  $begin = new DateTime('@' . strtotime('1 week ago'));
-  $begin->setTimezone($site_timezone);
-  $end = new dateTime('@' . strtotime('now'));
-  $end->setTimezone($site_timezone);
+  $start_date = new DateTime('@' . $start);
+  $start_date->setTimezone($site_timezone);
+  $end_date = new dateTime('@' . $end);
+  $end_date->setTimezone($site_timezone);
+
   $hour_ranges = array();
-  while($begin < $end) {
-    $begin->modify('+1 hour');
-    $key = $begin->format('Y-m-d H');
+  while($start_date < $end_date) {
+    $start_date->modify('+1 hour');
+    $key = $start_date->format('Y-m-d H');
     $hour_ranges[$key] = 0;
   }
   $hits = array();
