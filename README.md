@@ -95,6 +95,15 @@ Requires additional software and access to the web logs. Available OOTB with
 *some* hosting providers, but requires yet another login to access. And those
 log based statistics usually aren't great - visually and in terms of relevance.
 
+## Credits
+
+Interactive charts on the dashboard are build with
+[Chart.js](https://www.chartjs.org/), a simple yet flexible JavaScript charting
+library for the modern web.
+
+Chart.js is licensed under MIT and maintained
+[on GitHub](https://github.com/chartjs/Chart.js).
+
 ## License
 
 This project is GPLv3 software. See the LICENSE.txt file in this directory for complete text.
