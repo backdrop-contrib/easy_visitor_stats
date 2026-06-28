@@ -1,15 +1,15 @@
 # Easy Visitor Statistics
 
 Web analytics made easy. Get nice charts of visits on your site by real humans.
-Also on custom Entities, Views or Layout pages, not only nodes.
+Also on Views, Taxonomy Term or Layout pages, not only nodes.
 Zero configuration required, just install the module and wait for the charts
 to get populated.
 
 ![Dashboard screenshot](https://raw.githubusercontent.com/backdrop-contrib/easy_visitor_stats/1.x-1.x/screenshots/dashboard-screenshot.webp)
 
-No cookie banner required, as there are no cookies. No tracking, no
-fingerprinting nor collection of personal data of any kind. No 3rd party
-involved at all and fully compliant with GDPR.
+Fully compliant with GDPR, no cookie banner required, as there are no cookies.
+No tracking, fingerprinting or collection of personal data of any kind. No 3rd
+party involved at all.
 
 Works fine with page cache turned on and with or without asset aggregation
 enabled.
@@ -18,9 +18,9 @@ Note that only anonymous visits get collected, authenticated users will never
 show up in those statistics.
 
 Nowadays the vast majority of web traffic is caused by bots and scrapers, but
-it's the human visitors, that actually matter. Things got even harder, since
+it's the human visitors, that actually matter. Things got harder, since
 bots started to execute JavaScript. How many humans did actually look at your
-website? You'll be disappointed, how few that are.
+website? You'll be astonished, how few that are.
 
 ## Installation
 
@@ -29,12 +29,12 @@ Install this module using the official [Backdrop CMS instructions](https://docs.
 No configuration required, just visit the dashboard on
 admin/reports/easy-visitor-stats, but a few tweaks are available:
 
-- Tweak the time to keep data on admin/reports/easy-visitor-stats/settings
+- Tweak the duration to keep data on admin/reports/easy-visitor-stats/settings
   (the module ships with sane defaults)
 - Show charts with animations, if you prefer a little more eye candy
 
-Allow other roles to access the dashboard or raw data by granting permission
-on admin/config/people/permissions.
+Allow other roles than admin to access the dashboard or raw data by granting
+permission on admin/config/people/permissions.
 
 ## Issues
 
@@ -56,8 +56,8 @@ Bugs and Feature requests should be reported in the [Issue Queue](https://github
 
 ## Alternative solutions
 
-This module's not the only or first solution for web analytics with Backdrop
-CMS. There are a few, all with their pros and cons.
+This module's not the only solution for web analytics with Backdrop CMS. There
+are several, all with their pros and cons.
 
 ### Backdrop standalone modules
 
@@ -89,7 +89,7 @@ Analytics. The latter for sure requires a cookie banner and consent.
 
 ### Log based analysis with Webalizer, AWstats or the like
 
-Easy to use if someone else sets them up.
+Easy to use if already available and set up.
 
 Requires additional software and access to the web logs. Available OOTB with
 *some* hosting providers, but requires yet another login to access. And those
