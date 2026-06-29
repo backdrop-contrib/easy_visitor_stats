@@ -245,12 +245,23 @@ function _easy_visitor_stats_no_content() {
  * It's unclear, how many of those bots actually execute JavaScript.
  */
 function _easy_visitor_stats_detect_bot($ua_string) {
-  $pattern1 = '#Mozilla/\d\.0 \(compatible; ?[A-Za-z0-9]+(b|B)ot[;/]#';
-  if (preg_match($pattern1, $ua_string) === 1) {
+  $pattern = '#Mozilla/\d\.0 \(compatible; ?[A-Za-z0-9]+(b|B)ot[;/]#';
+  if (preg_match($pattern, $ua_string) === 1) {
     return TRUE;
   }
-  $pattern_2 = '/(SearchBot|ClaudeBot|Bytespider|facebookexternalhit|Exabot|WebIndex|Applebot|SleepBot|bingbot|Go-http-client|DuckAssistBot|Barkrowler|Sogou|Baiduspider|Googlebot|HeadlessChrome)/';
-  if (preg_match($pattern_2, $ua_string) === 1) {
+  // Anything with an URL.
+  $pattern = '#[ (+]https?://[a-z.-]+#';
+  if (preg_match($pattern, $ua_string) === 1) {
+    return TRUE;
+  }
+  // Anything with an email address.
+  $pattern = '#[ +][a-z-]+@[a-z-]+\.#';
+  if (preg_match($pattern, $ua_string) === 1) {
+    return TRUE;
+  }
+  // Known bot names. Some probably already filtered out above.
+  $pattern = '/(SearchBot|ClaudeBot|Bytespider|facebookexternalhit|Exabot|WebIndex|Applebot|SleepBot|bingbot|Go-http-client|DuckAssistBot|Barkrowler|Sogou|Baiduspider|YisouSpider|Googlebot|HeadlessChrome)/';
+  if (preg_match($pattern, $ua_string) === 1) {
     return TRUE;
   }
   // It may still be a bot, but in disguise.
