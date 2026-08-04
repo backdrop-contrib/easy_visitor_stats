@@ -270,6 +270,11 @@ function _easy_visitor_stats_filter_referrers(array $referrer_data) {
     if (empty($referrer) || strpos($referrer, $base_url) === 0) {
       continue;
     }
+    $referrer_host = parse_url($referrer, PHP_URL_HOST);
+    $current_host = parse_url($base_url, PHP_URL_HOST);
+    if (!$referrer_host || preg_replace('/^www./', '', $referrer_host) == preg_replace('/^www./', '', $current_host)) {
+      continue;
+    }
     $filtered_referrers[] = $referrer;
   }
   return $filtered_referrers;
