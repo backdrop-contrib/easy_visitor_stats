@@ -409,15 +409,15 @@ function _easy_visitor_stats_ajax_hits() {
   $end_date = new dateTime('@' . $end);
   $end_date->setTimezone($site_timezone);
 
-  $hour_ranges = array();
+  $hour_ranges = array($start_date->format('Y-m-d · H') => 0);
   while ($start_date < $end_date) {
     $start_date->modify('+1 hour');
-    $key = $start_date->format('Y-m-d H');
+    $key = $start_date->format('Y-m-d · H');
     $hour_ranges[$key] = 0;
   }
   $hits = array();
   foreach ($timestamps as $timestamp) {
-    $date = format_date($timestamp, 'custom', 'Y-m-d H');
+    $date = format_date($timestamp, 'custom', 'Y-m-d · H');
     if (array_key_exists($date, $hits)) {
       $hits[$date] = $hits[$date] + 1;
     }
