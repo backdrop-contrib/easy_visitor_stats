@@ -299,13 +299,17 @@ function _easy_visitor_stats_guess_os_browser($post) {
     }
 
     // Order matters!
-    if (preg_match('/Mozilla.+Chrome.+Safari/', $ua) == 1) {
+    if (preg_match('/Mozilla.+Windows.+ Chrome.+ Safari.+ Edg.+/', $ua) == 1) {
+      $info['browser'] = 'Edge';
+    }
+    // Various Blink based browsers, actually.
+    elseif (preg_match('/Mozilla.+ Chrome.+ Safari/', $ua) == 1) {
       $info['browser'] = 'Chrome';
     }
-    elseif (preg_match('/Mozilla.+AppleWebKit.+Safari/', $ua) == 1) {
+    elseif (preg_match('/Mozilla.+ AppleWebKit.+ Version.+ Safari/', $ua) == 1) {
       $info['browser'] = 'Safari';
     }
-    elseif (preg_match('/Mozilla.+Gecko.+Firefox/', $ua) == 1) {
+    elseif (preg_match('/Mozilla.+ Gecko.+ Firefox/', $ua) == 1) {
       $info['browser'] = 'Firefox';
     }
     else {
