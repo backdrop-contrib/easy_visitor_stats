@@ -132,7 +132,7 @@ function template_preprocess_easy_visitor_stats_dashboard(array &$variables) {
     'labels' => array_keys($range_seconds),
     'datasets' => array(
       0 => array(
-        'label' => t('Time spent on page'),
+        'label' => t('Time spent'),
         'data' => array_values($range_seconds),
       ),
     ),
