@@ -81,4 +81,8 @@
   <div class="easy-visitor-top-ten-wrapper">
     <?php print $top_ten; ?>
   </div>
+  <h2><?php print t('Page hits per month'); ?></h2>
+  <div class="easy-visitor-history-wrapper">
+    <canvas id="easy-visitor-monthly-chart" width="1156" height="400" aria-label="<?php print t('Bar chart of visits per month'); ?>" role="img"></canvas>
+  </div>
 </div>
