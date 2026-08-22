@@ -317,9 +317,11 @@ function _easy_visitor_stats_reduce_timezones(array $values) {
   $counted = array_count_values($values);
   arsort($counted);
   $show = array_slice($counted, 0, 9);
-  $aggregate = array_slice($counted, 9);
-  $show['other'] = array_sum($aggregate);
-  arsort($show);
+  if (count($counted) > 9) {
+    $aggregate = array_slice($counted, 9);
+    $show['other'] = array_sum($aggregate);
+    arsort($show);
+  }
 
   return $show;
 }
