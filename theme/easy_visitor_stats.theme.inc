@@ -91,8 +91,7 @@ function template_preprocess_easy_visitor_stats_dashboard(array &$variables) {
     ),
   );
 
-  $timezone_stats = array_count_values(array_column($rows, 'timezone'));
-  arsort($timezone_stats);
+  $timezone_stats = _easy_visitor_stats_reduce_timezones(array_column($rows, 'timezone'));
   $timezone_chart_data = array(
     'labels' => array_keys($timezone_stats),
     'datasets' => array(
@@ -278,4 +277,24 @@ function _easy_visitor_stats_filter_referrers(array $referrer_data) {
     $filtered_referrers[] = $referrer;
   }
   return $filtered_referrers;
+}
+
+/**
+ * Helper function to reduce the items for the timezone graph.
+ *
+ * @param array $values
+ *   Array of timezone records.
+ *
+ * @return array
+ *   Key/value pairs of timezones and their number of occurrence.
+ */
+function _easy_visitor_stats_reduce_timezones(array $values) {
+  $counted = array_count_values($values);
+  arsort($counted);
+  $show = array_slice($counted, 0, 9);
+  $aggregate = array_slice($counted, 9);
+  $show['other'] = array_sum($aggregate);
+  arsort($show);
+
+  return $show;
 }
