@@ -189,21 +189,6 @@ function template_preprocess_easy_visitor_stats_dashboard(array &$variables) {
   ));
   $variables['infotext'] = implode('<br>', $infotext);
 
-  // Collect all the charts data.
-  backdrop_add_js(array(
-    'easyVisitorStats' => array(
-      'hitsData' => $hits_chart_data,
-      'historyData' => $history_chart_data,
-      'browserData' => $browser_chart_data,
-      'osData' => $os_chart_data,
-      'timezoneData' => $timezone_chart_data,
-      'durationData' => $duration_chart_data,
-      'historyDataFetchBase' => base_path() . 'easy-visitor-stats-fetch/history/',
-      'hitsDataFetchBase' => base_path() . 'easy-visitor-stats-fetch/hits/',
-      'showAnimation' => (bool) config_get('easy_visitor_stats.settings', 'show_animations'),
-    ),
-  ), 'setting');
-
   // Build markup for "High score lists".
   $top_ten = array();
   $top_ten['top_ten_wrapper'] = array(
@@ -256,7 +241,47 @@ function template_preprocess_easy_visitor_stats_dashboard(array &$variables) {
   );
   $variables['top_ten'] = backdrop_render($top_ten);
 
-  // @todo Idea: some sort of year overview (granulariy month).
+  // A complex query, but sql is made for this after all.
+  $monthly = db_query("SELECT YEAR(date) AS 'year',MONTH(date) AS 'month',SUM(hits) AS 'hits' FROM {easy_visitor_history} GROUP BY YEAR(date), MONTH(date) ORDER BY date ASC")->fetchAll();
+  $monthly_chart_data = array(
+    'labels' => array(),
+    'datasets' => array(
+      0 => array(
+        'label' => 'hits',
+        'data' => array(),
+      ),
+    ),
+  );
+  foreach ($monthly as $values) {
+    $monthly_chart_data['labels'][] = $values->year . '-' . str_pad($values->month, 2, '0', STR_PAD_LEFT);
+    $monthly_chart_data['datasets'][0]['data'][] = $values->hits;
+  }
+  // Pad labels, so the bars don't look so lost in space with small datasets in
+  // new installs. Apparently no other option for alignment in Chart.js.
+  $bar_item_count = count($monthly);
+  if ($bar_item_count < 6) {
+    while ($bar_item_count < 6) {
+      $monthly_chart_data['labels'][] = '';
+      ++$bar_item_count;
+    }
+  }
+
+  // Collect all the charts data.
+  backdrop_add_js(array(
+    'easyVisitorStats' => array(
+      'hitsData' => $hits_chart_data,
+      'historyData' => $history_chart_data,
+      'browserData' => $browser_chart_data,
+      'osData' => $os_chart_data,
+      'timezoneData' => $timezone_chart_data,
+      'durationData' => $duration_chart_data,
+      'monthlyData' => $monthly_chart_data,
+      'historyDataFetchBase' => base_path() . 'easy-visitor-stats-fetch/history/',
+      'hitsDataFetchBase' => base_path() . 'easy-visitor-stats-fetch/hits/',
+      'showAnimation' => (bool) config_get('easy_visitor_stats.settings', 'show_animations'),
+    ),
+  ), 'setting');
+
 }
 
 /**

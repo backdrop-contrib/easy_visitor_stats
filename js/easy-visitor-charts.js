@@ -180,6 +180,19 @@
         plugins: [htmlLegendPlugin],
       });
 
+      // Monthly chart.
+      const barChartOptions = {
+        maxBarThickness: 100
+      };
+      if (!showAnimation) {
+        barChartOptions.animation = false;
+      }
+      const monthlyChartElement = document.getElementById('easy-visitor-monthly-chart');
+      new Chart(monthlyChartElement, {
+        type: 'bar',
+        options: barChartOptions,
+        data: settings.easyVisitorStats.monthlyData,
+      });
     }
   };
 })();
