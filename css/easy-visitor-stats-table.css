@@ -1,0 +1,4 @@
+.easy-visitor-stats-table td {
+  overflow-wrap: break-word;
+  max-width: 24em;
+}
