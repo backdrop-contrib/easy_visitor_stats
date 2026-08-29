@@ -72,7 +72,10 @@ function _easy_visitor_stats_settings_form($form, $form_state) {
     '#field_suffix' => t('days'),
     '#default_value' => $config->get('keep_detailed_days'),
     '#required' => TRUE,
-    '#description' => t('Database records older than that will be cleared out from <em>easy_visitor_details</em> table on cron runs.'),
+    '#description' => t('Database records older than that will be cleared out from <em>easy_visitor_details</em> table on cron runs. At least !min, at most !max.', array(
+      '!min' => 7,
+      '!max' => 60,
+    )),
   );
   $form['keep_history_months'] = array(
     '#type' => 'number',
@@ -82,7 +85,10 @@ function _easy_visitor_stats_settings_form($form, $form_state) {
     '#field_suffix' => t('months'),
     '#default_value' => $config->get('keep_history_months'),
     '#required' => TRUE,
-    '#description' => t('Database records older than that will be cleared out from <em>easy_visitor_history</em> table on cron runs.'),
+    '#description' => t('Database records older than that will be cleared out from <em>easy_visitor_history</em> table on cron runs. At least !min, at most !max.', array(
+      '!min' => 3,
+      '!max' => 36,
+    )),
   );
   $form['show_animations'] = array(
     '#type' => 'checkbox',
