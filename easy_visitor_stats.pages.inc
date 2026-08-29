@@ -46,6 +46,7 @@ function _easy_visitor_stats_raw() {
     '#header' => $header,
     '#rows' => $rows,
     '#empty' => t('No data yet.'),
+    '#attributes' => array('class' => array('easy-visitor-stats-table')),
   );
   $content['pager'] = array(
     '#markup' => theme('pager', array(
@@ -53,6 +54,7 @@ function _easy_visitor_stats_raw() {
       count($page_result),
     )),
   );
+  $content['#attached']['css'][] = backdrop_get_path('module', 'easy_visitor_stats') . '/css/easy-visitor-stats-table.css';
   return $content;
 }
 
