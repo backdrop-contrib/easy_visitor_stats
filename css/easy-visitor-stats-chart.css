@@ -90,3 +90,64 @@
   height: 1.5em;
   vertical-align: middle;
 }
+@media print {
+  body {
+    color: #000 !important;
+    background: #fff !important;
+    font-size: 12px !important;
+    border: none;
+  }
+  a {
+    color: #000 !important;
+    text-decoration: none;
+  }
+  .l-header,
+  .block {
+    margin: 0;
+    padding: 0 !important;
+  }
+  h1.page-title {
+    font-size: 24px !important;
+    line-height: 1;
+    margin: 0 0 24px !important;
+  }
+  h2 {
+    font-size: 20px !important;
+  }
+  h3 {
+    font-size: 16px !important;
+  }
+  h2, h3,
+  .chart-title {
+    break-after: avoid-page;/* Not baseline! */
+  }
+  details summary {
+    display: none !important;
+  }
+  ::details-content {
+    content-visibility: visible;/* Not baseline yet! */
+  }
+  select {
+    color: #000 !important;
+    background: #fff !important;
+    border: none !important;
+    font-size: 12px !important;
+  }
+  nav,
+  .tabs,
+  .block-system-breadcrumb {
+    display: none;
+  }
+  .container {
+    margin: 0;
+    padding: 0;
+    max-width: none;
+  }
+  canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+  .easy-visitor-top-ten {
+    display: block;
+  }
+}
