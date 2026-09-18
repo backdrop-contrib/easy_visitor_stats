@@ -38,6 +38,10 @@ function _easy_visitor_stats_raw() {
     unset($values['did']);
     $values['timestamp'] = format_date($values['timestamp']);
     $ts = $today_midnight + ($values['duration'] / 1000);
+    $phpversion = phpversion();
+    if (version_compare($phpversion, 8) < 0) {
+      $ts = (int) $ts;
+    }
     $values['duration'] = format_date($ts, 'custom', 'i:s.v');
     $rows[] = $values;
   }
