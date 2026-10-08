@@ -26,6 +26,10 @@
         startTime = Backdrop.settings.easyVisitorStart;
       }
       const duration = (now - startTime);
+      if (duration < 1000) {
+        // Too short to consider.
+        return;
+      }
       const data = {
         href: window.location.href,
         duration: duration,
