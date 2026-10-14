@@ -7,6 +7,23 @@
   });
 
   document.addEventListener('visibilitychange', function() {
+    // Filter out automated clients early, as most of these checks can only
+    // happen client side.
+    if (navigator.userAgent.includes('HeadlessChrome') || navigator.webdriver === true) {
+      return;
+    }
+    // Detect Playwright specifically.
+    if (typeof window.exposed !== 'undefined' && typeof window.exposed.__installed !== 'undefined') {
+      return;
+    }
+    if ('__playwright__binding__' in window || '__pwInitScripts' in window) {
+      return;
+    }
+    // More like a plausibility check.
+    if ((!navigator.languages || navigator.languages.length === 0) || !navigator.plugins.length) {
+      return;
+    }
+
     // Moved away from this browser tab, then comes back - reset timer. Moving
     // away already triggered sendBeacon().
     if (document.visibilityState === 'visible') {
