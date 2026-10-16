@@ -260,7 +260,7 @@ function _easy_visitor_stats_detect_bot($ua_string) {
     return TRUE;
   }
   // Known bot names. Some probably already filtered out above.
-  $pattern = '/(SearchBot|ClaudeBot|Bytespider|facebookexternalhit|Exabot|WebIndex|Applebot|SleepBot|bingbot|Go-http-client|DuckAssistBot|Barkrowler|Sogou|Baiduspider|YisouSpider|Googlebot|HeadlessChrome)/';
+  $pattern = '/(SearchBot|ClaudeBot|Bytespider|facebookexternalhit|Exabot|WebIndex|Applebot|SleepBot|bingbot|Go-http-client|DuckAssistBot|Barkrowler|Sogou|Baiduspider|YisouSpider|Googlebot|HeadlessChrome|RootEvidence)/';
   if (preg_match($pattern, $ua_string) === 1) {
     return TRUE;
   }
