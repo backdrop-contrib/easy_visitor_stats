@@ -20,7 +20,7 @@
       return;
     }
     // More like a plausibility check.
-    if ((!navigator.languages || navigator.languages.length === 0) || !navigator.plugins.length) {
+    if (!navigator.languages || navigator.languages.length === 0) {
       return;
     }
 
